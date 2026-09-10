@@ -1,3 +1,22 @@
-# .github/FUNDING.yml
+# Supported funding platforms for OpenBooklet.
+# Project maintainers: marcuwynu23, iammwwhobuild
+# Custom platforms enabled below; add GitHub Sponsors / Patreon / etc. by
+# uncommenting and populating the appropriate fields.
+
+# github: [marcuwynu23, iammwwhobuild]
+# patreon: # Replace with a single Patreon username shared by the project
+# open_collective: # Replace with a single Open Collective project name
+# ko_fi: # Replace with a single Ko-fi username
+# tidelift: # Tidelift platform-name/package-name e.g., github/marcuwynu23/openbooklet
+# community_bridge: # Community Bridge project-name e.g., openbooklet
+# liberapay: # Replace with a single Liberapay username
+# issuehunt: # Replace with a single IssueHunt username
+# lfx_crowdfunding: # LFX Crowdfunding project-name e.g., openbooklet
+# polar: # Replace with a single Polar username
+# buy_me_a_coffee: # Replace with a single Buy Me a Coffee username
+# thanks_dev: # Replace with a single thanks.dev username (https://thanks.dev)
+
 custom:
-  - https://paypal.me/wynumarcu23
+- https://paypal.me/wynumarcu23
+- https://github.com/sponsors/marcuwynu23
+- https://github.com/sponsors/iammwwhobuild
