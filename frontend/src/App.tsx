@@ -7,6 +7,13 @@ import { AddSectionForm } from './components/AddSectionForm';
 import { useBookletStore } from './stores';
 import './styles.css';
 
+function formatHeaderDate(value: string): string {
+  if (value === '') return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString();
+}
+
 function BookletHeader() {
   const booklet = useBookletStore((s) => s.booklet);
   const rename = useBookletStore((s) => s.rename);
@@ -69,7 +76,8 @@ function BookletHeader() {
         </button>
       </div>
       <span className="muted">
-                {booklet.type} · {booklet.status} · {booklet.sections.length} sections
+        {booklet.type} · {booklet.status} · {booklet.sections.length} sections · updated{' '}
+        {formatHeaderDate(booklet.updatedAt)}
       </span>
     </header>
   );

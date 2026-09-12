@@ -197,7 +197,7 @@ func TestRenameAndDeleteBookletEndpoints(t *testing.T) {
 	}
 
 	req, _ := http.NewRequest(http.MethodPut, server.URL+"/api/v1/booklets/b1",
-		strings.NewReader(`{"title":"New"}`))
+		strings.NewReader(`{"title":"New","audience":"ops","instructions":"Handle with care."}`))
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -213,6 +213,9 @@ func TestRenameAndDeleteBookletEndpoints(t *testing.T) {
 	}
 	if renamed.Title != "New" {
 		t.Errorf("title = %q, want New", renamed.Title)
+	}
+	if renamed.Audience != "ops" || renamed.Instructions != "Handle with care." {
+		t.Errorf("booklet = %+v, want audience and instructions updated", renamed)
 	}
 
 	delReq, _ := http.NewRequest(http.MethodDelete, server.URL+"/api/v1/booklets/b1", nil)

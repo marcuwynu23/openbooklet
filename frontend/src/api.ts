@@ -28,6 +28,7 @@ export interface Booklet {
   audience: string;
   instructions: string;
   sections: Section[];
+  createdAt: string;
   updatedAt: string;
 }
 
@@ -66,10 +67,13 @@ export const api = {
       body: JSON.stringify({ title, type: docType }),
     });
   },
-  renameBooklet(id: string, title: string): Promise<Booklet> {
+  updateBooklet(
+    id: string,
+    patch: { title?: string; type?: string; audience?: string; instructions?: string },
+  ): Promise<Booklet> {
     return request(`/api/v1/booklets/${encodeURIComponent(id)}`, {
       method: 'PUT',
-      body: JSON.stringify({ title }),
+      body: JSON.stringify(patch),
     });
   },
   async deleteBooklet(id: string): Promise<void> {

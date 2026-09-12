@@ -208,6 +208,7 @@ type bookletDTO struct {
 	Audience     string       `json:"audience"`
 	Instructions string       `json:"instructions"`
 	Sections     []sectionDTO `json:"sections"`
+	CreatedAt    string       `json:"createdAt"`
 	UpdatedAt    string       `json:"updatedAt"`
 }
 
@@ -237,6 +238,7 @@ func toBookletDTO(b *booklet.Booklet) bookletDTO {
 		Audience:     b.Audience,
 		Instructions: b.Instructions,
 		Sections:     sections,
+		CreatedAt:    b.CreatedAt.UTC().Format(time.RFC3339),
 		UpdatedAt:    b.UpdatedAt.UTC().Format(time.RFC3339),
 	}
 }
@@ -277,14 +279,17 @@ func (s *apiServer) handleCreateBooklet(w http.ResponseWriter, r *http.Request) 
 
 func (s *apiServer) handleRenameBooklet(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Title string `json:"title"`
+		Title        *string `json:"title"`
+		Type         *string `json:"type"`
+		Audience     *string `json:"audience"`
+		Instructions *string `json:"instructions"`
 	}
 	if err := decodeBody(r, &req); err != nil {
 		writeError(w, http.StatusBadRequest, "bad_request", err.Error())
 		return
 	}
-	if strings.TrimSpace(req.Title) == "" {
-		writeError(w, http.StatusBadRequest, "bad_request", "title is required")
+	if req.Title != nil && strings.TrimSpace(*req.Title) == "" {
+		writeError(w, http.StatusBadRequest, "bad_request", "title must not be empty")
 		return
 	}
 	b, err := s.svc.GetBooklet(r.PathValue("id"))
@@ -292,7 +297,18 @@ func (s *apiServer) handleRenameBooklet(w http.ResponseWriter, r *http.Request) 
 		writeError(w, http.StatusNotFound, "not_found", "booklet not found")
 		return
 	}
-	b.Title = req.Title
+	if req.Title != nil {
+		b.Title = *req.Title
+	}
+	if req.Type != nil {
+		b.Type = *req.Type
+	}
+	if req.Audience != nil {
+		b.Audience = *req.Audience
+	}
+	if req.Instructions != nil {
+		b.Instructions = *req.Instructions
+	}
 	if err := s.svc.UpdateBooklet(b); err != nil {
 		writeError(w, http.StatusBadRequest, "bad_request", err.Error())
 		return

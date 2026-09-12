@@ -11,6 +11,7 @@ interface BookletState {
   select: (id: string) => Promise<void>;
   create: (title: string, docType: string) => Promise<void>;
   rename: (title: string) => Promise<void>;
+  updateDetails: (patch: { audience?: string; instructions?: string }) => Promise<void>;
   remove: () => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -73,11 +74,24 @@ export const useBookletStore = create<BookletState>()((set, get) => ({
     if (booklet === null) return;
     set({ loading: true, error: null });
     try {
-      const updated = await api.renameBooklet(booklet.id, title);
+      const updated = await api.updateBooklet(booklet.id, { title });
       const booklets = await api.booklets();
       set({ booklet: updated, booklets, loading: false });
     } catch (err) {
       set({ loading: false, error: err instanceof Error ? err.message : 'rename failed' });
+    }
+  },
+
+  async updateDetails(patch: { audience?: string; instructions?: string }) {
+    const { booklet } = get();
+    if (booklet === null) return;
+    set({ loading: true, error: null });
+    try {
+      const updated = await api.updateBooklet(booklet.id, patch);
+      const booklets = await api.booklets();
+      set({ booklet: updated, booklets, loading: false });
+    } catch (err) {
+      set({ loading: false, error: err instanceof Error ? err.message : 'update failed' });
     }
   },
 
