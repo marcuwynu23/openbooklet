@@ -2,8 +2,10 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"encoding/json"
+	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -197,7 +199,7 @@ func TestRenameAndDeleteBookletEndpoints(t *testing.T) {
 	}
 
 	req, _ := http.NewRequest(http.MethodPut, server.URL+"/api/v1/booklets/b1",
-		strings.NewReader(`{"title":"New","audience":"ops","instructions":"Handle with care."}`))
+		strings.NewReader(`{"title":"New","audience":"ops","instructions":"Handle with care.","header":"Date: 2020","footer":"End.","showFooter":true}`))
 	req.Header.Set("Content-Type", "application/json")
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -216,6 +218,9 @@ func TestRenameAndDeleteBookletEndpoints(t *testing.T) {
 	}
 	if renamed.Audience != "ops" || renamed.Instructions != "Handle with care." {
 		t.Errorf("booklet = %+v, want audience and instructions updated", renamed)
+	}
+	if renamed.Header != "Date: 2020" || renamed.Footer != "End." || !renamed.ShowFooter {
+		t.Errorf("header/footer = %q/%q/%v", renamed.Header, renamed.Footer, renamed.ShowFooter)
 	}
 
 	delReq, _ := http.NewRequest(http.MethodDelete, server.URL+"/api/v1/booklets/b1", nil)
@@ -298,5 +303,97 @@ func TestCreateSectionEndpoint(t *testing.T) {
 	defer missing.Body.Close()
 	if missing.StatusCode != http.StatusNotFound {
 		t.Errorf("status = %d, want 404", missing.StatusCode)
+	}
+}
+
+func TestExportEndpoint(t *testing.T) {
+	server, svc := testMux(t, &fakeProvider{})
+	if _, err := svc.CreateBooklet("b1", "My Guide", "sop", "", ""); err != nil {
+		t.Fatalf("CreateBooklet failed: %v", err)
+	}
+	if err := svc.AddSection("b1", &booklet.Section{ID: "s1", Title: "Step", Level: 2, Content: "Do it.\n", Status: "draft"}); err != nil {
+		t.Fatalf("AddSection failed: %v", err)
+	}
+
+	resp, err := http.Get(server.URL + "/api/v1/booklets/b1/export?format=md")
+	if err != nil {
+		t.Fatalf("GET export failed: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d, want 200", resp.StatusCode)
+	}
+	if ct := resp.Header.Get("Content-Type"); ct != "text/markdown; charset=utf-8" {
+		t.Errorf("Content-Type = %q", ct)
+	}
+	if cd := resp.Header.Get("Content-Disposition"); !strings.Contains(cd, "my-guide.md") {
+		t.Errorf("Content-Disposition = %q, want my-guide.md", cd)
+	}
+	var out strings.Builder
+	buf := make([]byte, 1024)
+	for {
+		n, err := resp.Body.Read(buf)
+		out.Write(buf[:n])
+		if err != nil {
+			break
+		}
+	}
+	if out.String() != "## Step\n\nDo it.\n" {
+		t.Errorf("export body = %q", out.String())
+	}
+
+	bad, err := http.Get(server.URL + "/api/v1/booklets/b1/export?format=pdf")
+	if err != nil {
+		t.Fatalf("GET export failed: %v", err)
+	}
+	defer bad.Body.Close()
+	if bad.StatusCode != http.StatusBadRequest {
+		t.Errorf("status = %d, want 400", bad.StatusCode)
+	}
+}
+
+func TestImportEndpoint(t *testing.T) {
+	server, svc := testMux(t, &fakeProvider{})
+	if _, err := svc.CreateBooklet("b1", "Guide", "sop", "", ""); err != nil {
+		t.Fatalf("CreateBooklet failed: %v", err)
+	}
+
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+	part, err := writer.CreateFormFile("file", "notes.md")
+	if err != nil {
+		t.Fatalf("creating form file: %v", err)
+	}
+	_, _ = part.Write([]byte("# First\n\nBody.\n"))
+	if err := writer.Close(); err != nil {
+		t.Fatalf("closing writer: %v", err)
+	}
+
+	resp, err := http.Post(server.URL+"/api/v1/booklets/b1/import", writer.FormDataContentType(), &body)
+	if err != nil {
+		t.Fatalf("POST import failed: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusCreated {
+		t.Fatalf("status = %d, want 201", resp.StatusCode)
+	}
+	var decoded struct {
+		Data []struct {
+			Title string `json:"title"`
+		} `json:"data"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&decoded); err != nil {
+		t.Fatalf("decoding response: %v", err)
+	}
+	if len(decoded.Data) != 1 || decoded.Data[0].Title != "First" {
+		t.Errorf("imported = %+v, want one section titled First", decoded.Data)
+	}
+
+	stored, err := svc.GetBooklet("b1")
+	if err != nil {
+		t.Fatalf("GetBooklet failed: %v", err)
+	}
+	if len(stored.Sections) != 1 {
+		t.Errorf("stored sections = %d, want 1", len(stored.Sections))
 	}
 }

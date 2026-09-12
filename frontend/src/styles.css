@@ -188,6 +188,11 @@ body {
   margin: 0;
   font-size: 18px;
   flex: 1;
+  cursor: pointer;
+}
+
+.section-head h2:hover {
+  text-decoration: underline dotted;
 }
 
 .section-level {
@@ -386,6 +391,26 @@ body {
 
 .view-tabs {
   margin-bottom: 16px;
+}
+
+.transfer-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.transfer-row button {
+  padding: 6px 12px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.transfer-row button:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .full-preview {

@@ -55,8 +55,8 @@ func (s *Storage) runMigrations() error {
 			audience TEXT,
 			instructions TEXT,
 			template TEXT,
-			header TEXT,
-			footer TEXT,
+			header TEXT NOT NULL DEFAULT '',
+			footer TEXT NOT NULL DEFAULT '',
 			show_footer INTEGER NOT NULL DEFAULT 0,
 			created_at TEXT NOT NULL,
 			updated_at TEXT NOT NULL
@@ -113,10 +113,11 @@ func (s *Storage) runMigrations() error {
 	}
 
 	// Column additions for databases created before the column existed.
+	// NOT NULL DEFAULT backfills existing rows so scans never see NULL.
 	// Duplicate-column errors mean the migration already ran.
 	alters := []string{
-		`ALTER TABLE booklets ADD COLUMN header TEXT`,
-		`ALTER TABLE booklets ADD COLUMN footer TEXT`,
+		`ALTER TABLE booklets ADD COLUMN header TEXT NOT NULL DEFAULT ''`,
+		`ALTER TABLE booklets ADD COLUMN footer TEXT NOT NULL DEFAULT ''`,
 		`ALTER TABLE booklets ADD COLUMN show_footer INTEGER NOT NULL DEFAULT 0`,
 	}
 	for _, m := range alters {
@@ -124,6 +125,19 @@ func (s *Storage) runMigrations() error {
 			if strings.Contains(err.Error(), "duplicate column name") {
 				continue
 			}
+			return fmt.Errorf("migration failed: %w", err)
+		}
+	}
+
+	// Backfill NULLs left by earlier nullable migrations so scans never
+	// see NULL. Idempotent on every database.
+	backfills := []string{
+		`UPDATE booklets SET header = '' WHERE header IS NULL`,
+		`UPDATE booklets SET footer = '' WHERE footer IS NULL`,
+		`UPDATE booklets SET show_footer = 0 WHERE show_footer IS NULL`,
+	}
+	for _, m := range backfills {
+		if _, err := s.db.Exec(m); err != nil {
 			return fmt.Errorf("migration failed: %w", err)
 		}
 	}

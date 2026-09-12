@@ -60,19 +60,19 @@ The initial experience should **not** require the user to manually create cells.
 A new booklet starts with a large chat/prompt interface.
 
 ```text
-ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-³                      New Booklet                             ³
-³                                                              ³
-³  What would you like to create?                              ³
-³                                                              ³
-³  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿  ³
-³  ³ Create a Kubernetes deployment SOP for L1 DevOps       ³  ³
-³  ³ engineers. Include prerequisites, deployment,          ³  ³
-³  ³ validation, rollback and troubleshooting.              ³  ³
-³  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ  ³
-³                                                              ³
-³                         [ Generate ]                          ³
-ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+ï¿½                      New Booklet                             ï¿½
+ï¿½                                                              ï¿½
+ï¿½  What would you like to create?                              ï¿½
+ï¿½                                                              ï¿½
+ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿  ï¿½
+ï¿½  ï¿½ Create a Kubernetes deployment SOP for L1 DevOps       ï¿½  ï¿½
+ï¿½  ï¿½ engineers. Include prerequisites, deployment,          ï¿½  ï¿½
+ï¿½  ï¿½ validation, rollback and troubleshooting.              ï¿½  ï¿½
+ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½
+ï¿½                                                              ï¿½
+ï¿½                         [ Generate ]                          ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ```
 
 The AI generates a Markdown document.
@@ -134,18 +134,18 @@ This is one of OpenBooklet's core features.
 
 ```text
 AI Response
-     ³
+     ï¿½
      
 Markdown Parser
-     ³
-     ÃÄÄ # Title
-     ÃÄÄ ## Purpose
-     ÃÄÄ ## Prerequisites
-     ÃÄÄ ## Deployment
-     ÃÄÄ ## Validation
-     ÃÄÄ ## Rollback
-     ÀÄÄ ## Troubleshooting
-             ³
+     ï¿½
+     ï¿½ï¿½ï¿½ # Title
+     ï¿½ï¿½ï¿½ ## Purpose
+     ï¿½ï¿½ï¿½ ## Prerequisites
+     ï¿½ï¿½ï¿½ ## Deployment
+     ï¿½ï¿½ï¿½ ## Validation
+     ï¿½ï¿½ï¿½ ## Rollback
+     ï¿½ï¿½ï¿½ ## Troubleshooting
+             ï¿½
              
          Cell Tree
 ````
@@ -154,15 +154,15 @@ Result:
 
 ```text
 Kubernetes Deployment SOP
-³
-ÃÄÄ Purpose
-ÃÄÄ Prerequisites
-ÃÄÄ Deployment
-³   ÃÄÄ Verify Cluster Access
-³   ÀÄÄ Deploy Application
-ÃÄÄ Validation
-ÃÄÄ Rollback
-ÀÄÄ Troubleshooting
+ï¿½
+ï¿½ï¿½ï¿½ Purpose
+ï¿½ï¿½ï¿½ Prerequisites
+ï¿½ï¿½ï¿½ Deployment
+ï¿½   ï¿½ï¿½ï¿½ Verify Cluster Access
+ï¿½   ï¿½ï¿½ï¿½ Deploy Application
+ï¿½ï¿½ï¿½ Validation
+ï¿½ï¿½ï¿½ Rollback
+ï¿½ï¿½ï¿½ Troubleshooting
 ```
 
 ### Header mapping
@@ -190,29 +190,29 @@ Internally:
 
 ```text
 Booklet
-³
-ÃÄÄ Metadata
-ÃÄÄ Instructions
-ÃÄÄ Template
-ÃÄÄ Context
-ÃÄÄ References
-ÃÄÄ Settings
-³
-ÀÄÄ Sections
-    ³
-    ÃÄÄ Section
-    ³   ÃÄÄ Prompt
-    ³   ÃÄÄ Markdown
-    ³   ÃÄÄ Context
-    ³   ÃÄÄ Dependencies
-    ³   ÃÄÄ AI Metadata
-    ³   ÀÄÄ History
-    ³
-    ÃÄÄ Section
-    ³   ÀÄÄ ...
-    ³
-    ÀÄÄ Section
-        ÀÄÄ ...
+ï¿½
+ï¿½ï¿½ï¿½ Metadata
+ï¿½ï¿½ï¿½ Instructions
+ï¿½ï¿½ï¿½ Template
+ï¿½ï¿½ï¿½ Context
+ï¿½ï¿½ï¿½ References
+ï¿½ï¿½ï¿½ Settings
+ï¿½
+ï¿½ï¿½ï¿½ Sections
+    ï¿½
+    ï¿½ï¿½ï¿½ Section
+    ï¿½   ï¿½ï¿½ï¿½ Prompt
+    ï¿½   ï¿½ï¿½ï¿½ Markdown
+    ï¿½   ï¿½ï¿½ï¿½ Context
+    ï¿½   ï¿½ï¿½ï¿½ Dependencies
+    ï¿½   ï¿½ï¿½ï¿½ AI Metadata
+    ï¿½   ï¿½ï¿½ï¿½ History
+    ï¿½
+    ï¿½ï¿½ï¿½ Section
+    ï¿½   ï¿½ï¿½ï¿½ ...
+    ï¿½
+    ï¿½ï¿½ï¿½ Section
+        ï¿½ï¿½ï¿½ ...
 ```
 
 ---
@@ -269,24 +269,24 @@ It becomes editable document content.
 Each cell can look like:
 
 ```text
-ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-³ Prerequisites                             Section 2 ³
-ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
-³                                                     ³
-³ Prompt                                              ³
-³ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿ ³
-³ ³ Generate prerequisites for this SOP.            ³ ³
-³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ ³
-³                                                     ³
-³ Markdown                                            ³
-³ ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿ ³
-³ ³ - Kubernetes cluster access                     ³ ³
-³ ³ - kubectl                                       ³ ³
-³ ³ - Required permissions                          ³ ³
-³ ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ ³
-³                                                     ³
-³ [ Run ] [ Regenerate ] [ AI Edit ] [ History ]      ³
-ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+ï¿½ Prerequisites                             Section 2 ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä´
+ï¿½                                                     ï¿½
+ï¿½ Prompt                                              ï¿½
+ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ ï¿½
+ï¿½ ï¿½ Generate prerequisites for this SOP.            ï¿½ ï¿½
+ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½
+ï¿½                                                     ï¿½
+ï¿½ Markdown                                            ï¿½
+ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ ï¿½
+ï¿½ ï¿½ - Kubernetes cluster access                     ï¿½ ï¿½
+ï¿½ ï¿½ - kubectl                                       ï¿½ ï¿½
+ï¿½ ï¿½ - Required permissions                          ï¿½ ï¿½
+ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½
+ï¿½                                                     ï¿½
+ï¿½ [ Run ] [ Regenerate ] [ AI Edit ] [ History ]      ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ```
 
 The editor should support:
@@ -652,16 +652,16 @@ Dependency graph:
 
 ```text
 Architecture
-      ³
+      ï¿½
       
 Prerequisites
-      ³
+      ï¿½
       
 Deployment
-      ³
+      ï¿½
       
 Validation
-      ³
+      ï¿½
       
 Rollback
 ```
@@ -685,7 +685,7 @@ Current Section             600 tokens
 Referenced Sections       2,100 tokens
 Attached Files            3,500 tokens
 Prompt                      120 tokens
-ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 Estimated                  7,970 tokens
 ```
 
@@ -731,16 +731,16 @@ AI generation should stream into the cell.
 
 ```text
 LLM
- ³
+ ï¿½
  
 Go Backend
- ³
+ ï¿½
  
 SSE
- ³
+ ï¿½
  
 React
- ³
+ ï¿½
  
 Markdown Editor
 ```
@@ -922,16 +922,16 @@ The native file allows:
 
 ```text
 Git
-   ³
+   ï¿½
    
 .obk
-   ³
-   ÃÄÄ Structure
-   ÃÄÄ Prompts
-   ÃÄÄ Markdown
-   ÃÄÄ Metadata
-   ÃÄÄ References
-   ÀÄÄ History
+   ï¿½
+   ï¿½ï¿½ï¿½ Structure
+   ï¿½ï¿½ï¿½ Prompts
+   ï¿½ï¿½ï¿½ Markdown
+   ï¿½ï¿½ï¿½ Metadata
+   ï¿½ï¿½ï¿½ References
+   ï¿½ï¿½ï¿½ History
 ```
 
 It should be:
@@ -985,9 +985,9 @@ becomes:
 ```text
 System Documentation
 
-ÃÄÄ Architecture
-ÃÄÄ Installation
-ÀÄÄ Configuration
+ï¿½ï¿½ï¿½ Architecture
+ï¿½ï¿½ï¿½ Installation
+ï¿½ï¿½ï¿½ Configuration
 ```
 
 This makes OpenBooklet useful even without AI generation.
@@ -1046,18 +1046,18 @@ OpenBooklet should eventually support Projects containing multiple Booklets.
 
 ```text
 Project
-³
-ÃÄÄ Source
-ÃÄÄ Files
-ÃÄÄ References
-ÃÄÄ Configuration
-³
-ÀÄÄ Booklets
-    ÃÄÄ Architecture
-    ÃÄÄ SOP
-    ÃÄÄ MOP
-    ÃÄÄ Runbook
-    ÀÄÄ Guidelines
+ï¿½
+ï¿½ï¿½ï¿½ Source
+ï¿½ï¿½ï¿½ Files
+ï¿½ï¿½ï¿½ References
+ï¿½ï¿½ï¿½ Configuration
+ï¿½
+ï¿½ï¿½ï¿½ Booklets
+    ï¿½ï¿½ï¿½ Architecture
+    ï¿½ï¿½ï¿½ SOP
+    ï¿½ï¿½ï¿½ MOP
+    ï¿½ï¿½ï¿½ Runbook
+    ï¿½ï¿½ï¿½ Guidelines
 ```
 
 Example:
@@ -1066,11 +1066,11 @@ Example:
 Kubernetes Platform Project
 
 Booklets:
-ÃÄÄ Platform Architecture
-ÃÄÄ Cluster Deployment MOP
-ÃÄÄ Application Deployment SOP
-ÃÄÄ Incident Runbook
-ÀÄÄ Operations Guidelines
+ï¿½ï¿½ï¿½ Platform Architecture
+ï¿½ï¿½ï¿½ Cluster Deployment MOP
+ï¿½ï¿½ï¿½ Application Deployment SOP
+ï¿½ï¿½ï¿½ Incident Runbook
+ï¿½ï¿½ï¿½ Operations Guidelines
 ```
 
 Shared project context can be used by all booklets.
@@ -1109,10 +1109,10 @@ Example:
 
 ```text
 Project
-ÃÄÄ deployment.yaml
-ÃÄÄ service.yaml
-ÃÄÄ README.md
-ÀÄÄ architecture.md
+ï¿½ï¿½ï¿½ deployment.yaml
+ï¿½ï¿½ï¿½ service.yaml
+ï¿½ï¿½ï¿½ README.md
+ï¿½ï¿½ï¿½ architecture.md
 ```
 
 User:
@@ -1303,28 +1303,28 @@ Vite
 Main UI:
 
 ```text
-ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-³ OpenBooklet                              Model   Settings    ³
-ÃÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ´
-³               ³                                              ³
-³ BOOKLET       ³                CONTENT                       ³
-³               ³                                              ³
-³ Purpose       ³  Deployment Procedure                        ³
-³ Prerequisites ³                                              ³
-³ Deployment    ³  Prompt                                      ³
-³   Ã Verify    ³  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿  ³
-³   À Deploy    ³  ³ Generate the deployment procedure...   ³  ³
-³ Validation    ³  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ  ³
-³ Rollback      ³                                              ³
-³ Troubleshoot  ³  Markdown                                    ³
-³               ³  ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿  ³
-³ [+ Section]   ³  ³ ## Deployment Procedure               ³  ³
-³               ³  ³                                        ³  ³
-³               ³  ³ ...                                    ³  ³
-³               ³  ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ  ³
-³               ³                                              ³
-³               ³  [Run] [AI Edit] [Review] [History]          ³
-ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÁÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+ï¿½ OpenBooklet                              Model   Settings    ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä´
+ï¿½               ï¿½                                              ï¿½
+ï¿½ BOOKLET       ï¿½                CONTENT                       ï¿½
+ï¿½               ï¿½                                              ï¿½
+ï¿½ Purpose       ï¿½  Deployment Procedure                        ï¿½
+ï¿½ Prerequisites ï¿½                                              ï¿½
+ï¿½ Deployment    ï¿½  Prompt                                      ï¿½
+ï¿½   ï¿½ Verify    ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿  ï¿½
+ï¿½   ï¿½ Deploy    ï¿½  ï¿½ Generate the deployment procedure...   ï¿½  ï¿½
+ï¿½ Validation    ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½
+ï¿½ Rollback      ï¿½                                              ï¿½
+ï¿½ Troubleshoot  ï¿½  Markdown                                    ï¿½
+ï¿½               ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿  ï¿½
+ï¿½ [+ Section]   ï¿½  ï¿½ ## Deployment Procedure               ï¿½  ï¿½
+ï¿½               ï¿½  ï¿½                                        ï¿½  ï¿½
+ï¿½               ï¿½  ï¿½ ...                                    ï¿½  ï¿½
+ï¿½               ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½
+ï¿½               ï¿½                                              ï¿½
+ï¿½               ï¿½  [Run] [AI Edit] [Review] [History]          ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ```
 
 ---
@@ -1337,13 +1337,13 @@ Layering:
 
 ```text
 HTTP API
-   ³
+   ï¿½
    
 Application Services
-   ³
+   ï¿½
    
 Domain Layer
-   ³
+   ï¿½
    
 Infrastructure
 ```
@@ -1352,20 +1352,20 @@ Packages:
 
 ```text
 internal/
-ÃÄÄ booklet/
-ÃÄÄ section/
-ÃÄÄ context/
-ÃÄÄ llm/
-ÃÄÄ provider/
-ÃÄÄ storage/
-ÃÄÄ file/
-ÃÄÄ template/
-ÃÄÄ review/
-ÃÄÄ reference/
-ÃÄÄ export/
-ÃÄÄ git/
-ÃÄÄ config/
-ÀÄÄ security/
+ï¿½ï¿½ï¿½ booklet/
+ï¿½ï¿½ï¿½ section/
+ï¿½ï¿½ï¿½ context/
+ï¿½ï¿½ï¿½ llm/
+ï¿½ï¿½ï¿½ provider/
+ï¿½ï¿½ï¿½ storage/
+ï¿½ï¿½ï¿½ file/
+ï¿½ï¿½ï¿½ template/
+ï¿½ï¿½ï¿½ review/
+ï¿½ï¿½ï¿½ reference/
+ï¿½ï¿½ï¿½ export/
+ï¿½ï¿½ï¿½ git/
+ï¿½ï¿½ï¿½ config/
+ï¿½ï¿½ï¿½ security/
 ```
 
 ---
@@ -1617,11 +1617,11 @@ Local functionality:
 
 ```text
 OpenBooklet
-ÃÄÄ SQLite
-ÃÄÄ Filesystem
-ÃÄÄ .obk
-ÃÄÄ Markdown
-ÀÄÄ Local LLM
+ï¿½ï¿½ï¿½ SQLite
+ï¿½ï¿½ï¿½ Filesystem
+ï¿½ï¿½ï¿½ .obk
+ï¿½ï¿½ï¿½ Markdown
+ï¿½ï¿½ï¿½ Local LLM
 ```
 
 Possible local providers:
@@ -1704,79 +1704,79 @@ Recommended:
 
 ```text
 openbooklet/
-³
-ÃÄÄ cmd/
-³   ÀÄÄ openbooklet/
-³       ÀÄÄ main.go
-³
-ÃÄÄ internal/
-³   ÃÄÄ booklet/
-³   ³   ÃÄÄ model.go
-³   ³   ÃÄÄ service.go
-³   ³   ÃÄÄ repository.go
-³   ³   ÃÄÄ parser.go
-³   ³   ÀÄÄ serializer.go
-³   ³
-³   ÃÄÄ section/
-³   ³   ÃÄÄ model.go
-³   ³   ÃÄÄ service.go
-³   ³   ÀÄÄ history.go
-³   ³
-³   ÃÄÄ context/
-³   ÃÄÄ llm/
-³   ÃÄÄ provider/
-³   ÃÄÄ storage/
-³   ÃÄÄ file/
-³   ÃÄÄ template/
-³   ÃÄÄ review/
-³   ÃÄÄ reference/
-³   ÃÄÄ export/
-³   ÃÄÄ git/
-³   ÃÄÄ config/
-³   ÀÄÄ security/
-³
-ÃÄÄ providers/
-³   ÃÄÄ openai/
-³   ÃÄÄ anthropic/
-³   ÃÄÄ gemini/
-³   ÃÄÄ ollama/
-³   ÀÄÄ compatible/
-³
-ÃÄÄ web/
-³   ÃÄÄ src/
-³   ³   ÃÄÄ components/
-³   ³   ÃÄÄ pages/
-³   ³   ÃÄÄ hooks/
-³   ³   ÃÄÄ services/
-³   ³   ÃÄÄ stores/
-³   ³   ÀÄÄ types/
-³   ÀÄÄ package.json
-³
-ÃÄÄ templates/
-³   ÃÄÄ article.yaml
-³   ÃÄÄ sop.yaml
-³   ÃÄÄ mop.yaml
-³   ÃÄÄ guideline.yaml
-³   ÃÄÄ runbook.yaml
-³   ÃÄÄ technical-documentation.yaml
-³   ÀÄÄ architecture.yaml
-³
-ÃÄÄ docs/
-ÃÄÄ examples/
-ÃÄÄ tests/
-ÃÄÄ scripts/
-³
-ÃÄÄ Dockerfile
-ÃÄÄ docker-compose.yml
-ÃÄÄ Makefile
-ÃÄÄ go.mod
-ÃÄÄ go.sum
-ÃÄÄ README.md
-ÃÄÄ CONTRIBUTING.md
-ÃÄÄ SECURITY.md
-ÃÄÄ ARCHITECTURE.md
-ÃÄÄ CHANGELOG.md
-ÀÄÄ LICENSE
+ï¿½
+ï¿½ï¿½ï¿½ cmd/
+ï¿½   ï¿½ï¿½ï¿½ openbooklet/
+ï¿½       ï¿½ï¿½ï¿½ main.go
+ï¿½
+ï¿½ï¿½ï¿½ internal/
+ï¿½   ï¿½ï¿½ï¿½ booklet/
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ model.go
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ service.go
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ repository.go
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ parser.go
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ serializer.go
+ï¿½   ï¿½
+ï¿½   ï¿½ï¿½ï¿½ section/
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ model.go
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ service.go
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ history.go
+ï¿½   ï¿½
+ï¿½   ï¿½ï¿½ï¿½ context/
+ï¿½   ï¿½ï¿½ï¿½ llm/
+ï¿½   ï¿½ï¿½ï¿½ provider/
+ï¿½   ï¿½ï¿½ï¿½ storage/
+ï¿½   ï¿½ï¿½ï¿½ file/
+ï¿½   ï¿½ï¿½ï¿½ template/
+ï¿½   ï¿½ï¿½ï¿½ review/
+ï¿½   ï¿½ï¿½ï¿½ reference/
+ï¿½   ï¿½ï¿½ï¿½ export/
+ï¿½   ï¿½ï¿½ï¿½ git/
+ï¿½   ï¿½ï¿½ï¿½ config/
+ï¿½   ï¿½ï¿½ï¿½ security/
+ï¿½
+ï¿½ï¿½ï¿½ providers/
+ï¿½   ï¿½ï¿½ï¿½ openai/
+ï¿½   ï¿½ï¿½ï¿½ anthropic/
+ï¿½   ï¿½ï¿½ï¿½ gemini/
+ï¿½   ï¿½ï¿½ï¿½ ollama/
+ï¿½   ï¿½ï¿½ï¿½ compatible/
+ï¿½
+ï¿½ï¿½ï¿½ web/
+ï¿½   ï¿½ï¿½ï¿½ src/
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ components/
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ pages/
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ hooks/
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ services/
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ stores/
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ types/
+ï¿½   ï¿½ï¿½ï¿½ package.json
+ï¿½
+ï¿½ï¿½ï¿½ templates/
+ï¿½   ï¿½ï¿½ï¿½ article.yaml
+ï¿½   ï¿½ï¿½ï¿½ sop.yaml
+ï¿½   ï¿½ï¿½ï¿½ mop.yaml
+ï¿½   ï¿½ï¿½ï¿½ guideline.yaml
+ï¿½   ï¿½ï¿½ï¿½ runbook.yaml
+ï¿½   ï¿½ï¿½ï¿½ technical-documentation.yaml
+ï¿½   ï¿½ï¿½ï¿½ architecture.yaml
+ï¿½
+ï¿½ï¿½ï¿½ docs/
+ï¿½ï¿½ï¿½ examples/
+ï¿½ï¿½ï¿½ tests/
+ï¿½ï¿½ï¿½ scripts/
+ï¿½
+ï¿½ï¿½ï¿½ Dockerfile
+ï¿½ï¿½ï¿½ docker-compose.yml
+ï¿½ï¿½ï¿½ Makefile
+ï¿½ï¿½ï¿½ go.mod
+ï¿½ï¿½ï¿½ go.sum
+ï¿½ï¿½ï¿½ README.md
+ï¿½ï¿½ï¿½ CONTRIBUTING.md
+ï¿½ï¿½ï¿½ SECURITY.md
+ï¿½ï¿½ï¿½ ARCHITECTURE.md
+ï¿½ï¿½ï¿½ CHANGELOG.md
+ï¿½ï¿½ï¿½ LICENSE
 ```
 
 ---
@@ -2233,16 +2233,16 @@ A particularly interesting future feature:
 
 ```text
 Git Push
-    ³
+    ï¿½
     
 OpenBooklet CI
-    ³
-    ÃÄÄ Load documentation
-    ÃÄÄ Validate structure
-    ÃÄÄ AI review
-    ÃÄÄ Check consistency
-    ÃÄÄ Check references
-    ÀÄÄ Generate quality report
+    ï¿½
+    ï¿½ï¿½ï¿½ Load documentation
+    ï¿½ï¿½ï¿½ Validate structure
+    ï¿½ï¿½ï¿½ AI review
+    ï¿½ï¿½ï¿½ Check consistency
+    ï¿½ï¿½ï¿½ Check references
+    ï¿½ï¿½ï¿½ Generate quality report
 ```
 
 Example:
@@ -2307,14 +2307,14 @@ User:
 "Create an SOP for this service."
 
 Agent
- ÃÄÄ Inspect repository
- ÃÄÄ Identify deployment files
- ÃÄÄ Analyze architecture
- ÃÄÄ Identify operational procedures
- ÃÄÄ Generate booklet
- ÃÄÄ Generate sections
- ÃÄÄ Review consistency
- ÀÄÄ Ask user for missing information
+ ï¿½ï¿½ï¿½ Inspect repository
+ ï¿½ï¿½ï¿½ Identify deployment files
+ ï¿½ï¿½ï¿½ Analyze architecture
+ ï¿½ï¿½ï¿½ Identify operational procedures
+ ï¿½ï¿½ï¿½ Generate booklet
+ ï¿½ï¿½ï¿½ Generate sections
+ ï¿½ï¿½ï¿½ Review consistency
+ ï¿½ï¿½ï¿½ Ask user for missing information
 ```
 
 The important principle remains:
@@ -2376,17 +2376,17 @@ GitHub Actions:
 
 ```text
 Pull Request
-    ³
-    ÃÄÄ gofmt
-    ÃÄÄ go vet
-    ÃÄÄ staticcheck
-    ÃÄÄ golangci-lint
-    ÃÄÄ Go tests
-    ÃÄÄ TypeScript check
-    ÃÄÄ ESLint
-    ÃÄÄ Frontend tests
-    ÃÄÄ Build
-    ÀÄÄ Security scan
+    ï¿½
+    ï¿½ï¿½ï¿½ gofmt
+    ï¿½ï¿½ï¿½ go vet
+    ï¿½ï¿½ï¿½ staticcheck
+    ï¿½ï¿½ï¿½ golangci-lint
+    ï¿½ï¿½ï¿½ Go tests
+    ï¿½ï¿½ï¿½ TypeScript check
+    ï¿½ï¿½ï¿½ ESLint
+    ï¿½ï¿½ï¿½ Frontend tests
+    ï¿½ï¿½ï¿½ Build
+    ï¿½ï¿½ï¿½ Security scan
 ```
 
 Release:
@@ -2526,41 +2526,41 @@ The actual product is the **structured, editable Booklet**.
 
 ```text
                          OPENBOOKLET
-                              ³
-             ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-             ³                ³                ³
+                              ï¿½
+             ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+             ï¿½                ï¿½                ï¿½
                                              
         Web Interface       CLI/API        .obk Format
-             ³                ³                ³
-             ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
-                              ³
+             ï¿½                ï¿½                ï¿½
+             ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                              ï¿½
                               
                        Booklet Engine
-                              ³
-              ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-              ³               ³               ³
+                              ï¿½
+              ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+              ï¿½               ï¿½               ï¿½
                                             
            Sections        Templates       Context
-              ³               ³               ³
-              ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
-                              ³
+              ï¿½               ï¿½               ï¿½
+              ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                              ï¿½
                               
                        AI / LLM Engine
-                              ³
-          ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-          ³                   ³                   ³
+                              ï¿½
+          ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+          ï¿½                   ï¿½                   ï¿½
        OpenAI             Anthropic            Ollama
-          ³                   ³                   ³
-          ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
-                              ³
+          ï¿½                   ï¿½                   ï¿½
+          ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                              ï¿½
                               
                        Markdown Content
-                              ³
-             ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÅÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-             ³                ³                ³
+                              ï¿½
+             ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+             ï¿½                ï¿½                ï¿½
                                              
            Review          History          Export
-             ³                ³                ³
+             ï¿½                ï¿½                ï¿½
                                              
           Approve            Git          Markdown/HTML
 ```
@@ -2572,59 +2572,59 @@ The actual product is the **structured, editable Booklet**.
 If you want to keep development focused, **this is the golden path for OpenBooklet v0.1**:
 
 ```text
-ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-³  Create Booklet ³
-ÀÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÙ
-         ³
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+ï¿½  Create Booklet ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+         ï¿½
          
-ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-³   Chat Prompt   ³
-ÀÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÙ
-         ³
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+ï¿½   Chat Prompt   ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+         ï¿½
          
-ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-³       LLM       ³
-ÀÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÙ
-         ³
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+ï¿½       LLM       ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+         ï¿½
          
-ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-³ Markdown Result ³
-ÀÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÙ
-         ³
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+ï¿½ Markdown Result ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+         ï¿½
          
-ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-³ Markdown Parser ³
-ÀÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÙ
-         ³
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+ï¿½ Markdown Parser ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+         ï¿½
          
-ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-³ Automatically create    ³
-³ sections/cells from     ³
-³ Markdown headings       ³
-ÀÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
-           ³
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+ï¿½ Automatically create    ï¿½
+ï¿½ sections/cells from     ï¿½
+ï¿½ Markdown headings       ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+           ï¿½
            
-ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-³      Editable Cells     ³
-³                         ³
-³ Prompt + Markdown       ³
-³ Context + History       ³
-ÀÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
-           ³
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+ï¿½      Editable Cells     ï¿½
+ï¿½                         ï¿½
+ï¿½ Prompt + Markdown       ï¿½
+ï¿½ Context + History       ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+           ï¿½
            
-ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-³     AI + Human Edit     ³
-ÀÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
-           ³
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+ï¿½     AI + Human Edit     ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+           ï¿½
            
-ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
-³   Complete Booklet      ³
-ÀÄÄÄÄÄÄÄÄÄÄÂÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
-           ³
-       ÚÄÄÄÁÄÄÄÄ¿
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
+ï¿½   Complete Booklet      ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+           ï¿½
+       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿
                
      .obk      Git
-       ³
+       ï¿½
        
  Markdown / HTML
 ```
@@ -2636,4 +2636,69 @@ If you want to keep development focused, **this is the golden path for OpenBookl
 That gives OpenBooklet a very clear identity:
 
 > **Chat is the creation interface. Cells are the editing interface. Markdown is the content layer. The Booklet is the document. AI is the assistant.**
+
+---
+
+# 76. Implementation Status (Living Appendix)
+
+> Updated as phases land. The UI says **section** everywhere (the word "cell"
+> survives only as the historical synonym in early docs).
+
+## Done â€” Phases 1â€“7 (working slices)
+
+```text
+Phase 1 â€” Core Go Engine ............ Booklet/Section models, services,
+                                       in-memory repos, status state machines
+Phase 2 â€” Storage ................... SQLite repositories (booklets, sections,
+                                       history, references), :memory: tests
+Phase 3 â€” `.obk` Format .............. Versioned YAML serializer/deserializer,
+                                       header/footer/show_footer fields,
+                                       golden-file + lossless round-trip tests
+Phase 4 â€” Markdown Parser ........... md â‡„ sections, fence-aware headings,
+                                       front matter + preamble preserved,
+                                       Markdown export/import endpoints
+Phase 5 â€” LLM Engine ................ Provider interface (+ Name), shared
+                                       contract suite, OpenAI-compatible (SSE)
+                                       and Ollama (NDJSON) clients with
+                                       retries, timeouts, cancellation
+Phase 6 â€” AI Booklet Creation ....... internal/llm event streaming
+                                       (start â†’ token* â†’ complete), booklet
+                                       generation + per-section regenerate /
+                                       expand / shorten / edit with history
+                                       snapshots â€” all inside the web UI
+Phase 7 â€” Web UI (working slice) .... React + TS strict + Vite + Zustand.
+                                       Sidebar (collapsible icon rail),
+                                       numbered section cards with Edit/Preview
+                                       tabs, inline title editing, accordion
+                                       collapse, chat-style Generate panel
+                                       (SSE), manual add-section form (H1â€“H6),
+                                       full-booklet Preview tab with Markdown
+                                       header/footer blocks, Markdown
+                                       download + file import
+```
+
+## Live API surface (`/api/v1/`)
+
+```text
+GET    /healthz
+GET    /api/v1/version
+GET    /api/v1/booklets
+POST   /api/v1/booklets
+GET    /api/v1/booklets/{id}
+PUT    /api/v1/booklets/{id}            title/type/audience/instructions/
+                                       header/footer/showFooter
+DELETE /api/v1/booklets/{id}
+POST   /api/v1/booklets/{id}/sections
+PUT    /api/v1/booklets/{id}/sections/{sid}
+POST   /api/v1/booklets/{id}/sections/{sid}/regenerate
+POST   /api/v1/booklets/{id}/generate   SSE: start â†’ token* â†’ complete | error
+GET    /api/v1/booklets/{id}/export?format=md
+POST   /api/v1/booklets/{id}/import     multipart `file` field
+```
+
+## Still ahead â€” Phases 8â€“16
+
+Context engine (`@section` references, file context, token estimation),
+templates, file intelligence, review engine, HTML/PDF export, Git integration,
+diagrams, advanced AI workflows, v1.0.
 

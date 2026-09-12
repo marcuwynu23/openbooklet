@@ -105,6 +105,79 @@ func ParseMarkdown(input string) (*ParsedMarkdown, error) {
 	return doc, nil
 }
 
+// ExportMarkdown renders sections to a canonical Markdown document.
+func ExportMarkdown(sections []Section) (string, error) {
+	return RenderMarkdown(&ParsedMarkdown{Sections: sections})
+}
+
+// ImportMarkdown parses uploaded Markdown into new sections on a booklet.
+// Heading-less documents become a single top-level section named after the
+// file. Leading front matter and preamble fold into the first section so no
+// uploaded text is lost. Imported sections start as drafts with fresh IDs
+// that cannot collide with existing sections.
+func (s *Service) ImportMarkdown(bookletID, filename, content string) ([]Section, error) {
+	b, err := s.repo.GetBooklet(bookletID)
+	if err != nil {
+		return nil, err
+	}
+	if strings.TrimSpace(content) == "" {
+		return nil, fmt.Errorf("nothing to import")
+	}
+
+	doc, err := ParseMarkdown(content)
+	if err != nil {
+		return nil, fmt.Errorf("parsing markdown: %w", err)
+	}
+	if len(doc.Sections) == 0 {
+		name := strings.TrimSuffix(filename, ".md")
+		if name == "" {
+			name = "Imported"
+		}
+		doc.Sections = []Section{{
+			Title:   name,
+			Level:   1,
+			Content: strings.TrimSpace(content),
+		}}
+	} else if leading := leadingText(doc); leading != "" {
+		doc.Sections[0].Content = leading + "\n\n" + doc.Sections[0].Content
+	}
+
+	used := make(map[string]int, len(b.Sections))
+	for i := range b.Sections {
+		used[b.Sections[i].ID]++
+	}
+	now := timeNow()
+	sections := make([]Section, 0, len(doc.Sections))
+	for i := range doc.Sections {
+		sec := &doc.Sections[i]
+		sec.ID = uniqueSectionID(used, slugify(sec.Title))
+		sec.Status = section.SectionStatusDraft
+		sec.CreatedAt = now
+		sec.UpdatedAt = now
+		if err := sec.Validate(); err != nil {
+			return nil, err
+		}
+		if err := s.repo.SaveSection(bookletID, sec); err != nil {
+			return nil, fmt.Errorf("saving imported section %q: %w", sec.ID, err)
+		}
+		sections = append(sections, *sec)
+	}
+	return sections, nil
+}
+
+// leadingText joins a parsed document's front matter and preamble for
+// folding into the first section on import.
+func leadingText(doc *ParsedMarkdown) string {
+	var parts []string
+	if doc.FrontMatter != "" {
+		parts = append(parts, doc.FrontMatter)
+	}
+	if doc.Preamble != "" {
+		parts = append(parts, doc.Preamble)
+	}
+	return strings.Join(parts, "\n\n")
+}
+
 // RenderMarkdown renders parsed Markdown back to a document. The output is
 // canonical: single blank lines separate blocks and the text ends with exactly
 // one trailing newline.
@@ -137,8 +210,12 @@ func RenderMarkdown(doc *ParsedMarkdown) (string, error) {
 		out.WriteString(" ")
 		out.WriteString(s.Title)
 		out.WriteString("\n")
-		if s.Content != "" {
-			out.WriteString(s.Content)
+		// Normalize stored content to canonical form so exports are stable
+		// no matter how the content was saved (trailing newlines from
+		// editors, leading blanks from parsing).
+		if trimmed := strings.Trim(s.Content, "\n"); trimmed != "" {
+			out.WriteString("\n")
+			out.WriteString(trimmed)
 			out.WriteString("\n")
 		}
 		if i < len(doc.Sections)-1 {

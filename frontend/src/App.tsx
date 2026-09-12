@@ -3,6 +3,7 @@ import { Sidebar } from './components/Sidebar';
 import { SectionCard } from './components/SectionCard';
 import { GeneratePanel } from './components/GeneratePanel';
 import { Preview } from './components/Preview';
+import { TransferButtons } from './components/TransferButtons';
 import { AddSectionForm } from './components/AddSectionForm';
 import { useBookletStore } from './stores';
 import './styles.css';
@@ -134,6 +135,7 @@ export function App() {
             ) : (
               <>
                 <GeneratePanel bookletId={booklet.id} />
+                <TransferButtons bookletId={booklet.id} />
                 {booklet.sections.map((section, i) => (
                   <SectionCard key={section.id} bookletId={booklet.id} section={section} index={i + 1} />
                 ))}

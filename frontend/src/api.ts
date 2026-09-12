@@ -93,6 +93,29 @@ export const api = {
       throw new Error(`delete failed: ${res.status}`);
     }
   },
+  async exportBooklet(id: string): Promise<{ blob: Blob; filename: string }> {
+    const res = await fetch(`/api/v1/booklets/${encodeURIComponent(id)}/export?format=md`);
+    if (!res.ok) {
+      throw new Error(`export failed: ${res.status}`);
+    }
+    const blob = await res.blob();
+    const disposition = res.headers.get('Content-Disposition') ?? '';
+    const match = disposition.match(/filename="([^"]+)"/);
+    return { blob, filename: match?.[1] ?? `${id}.md` };
+  },
+  async importMarkdown(id: string, file: File): Promise<Section[]> {
+    const form = new FormData();
+    form.append('file', file, file.name);
+    const res = await fetch(`/api/v1/booklets/${encodeURIComponent(id)}/import`, {
+      method: 'POST',
+      body: form,
+    });
+    const body = (await res.json()) as Envelope<Section[]>;
+    if (!res.ok || body.error !== undefined) {
+      throw new Error(body.error?.message ?? `import failed: ${res.status}`);
+    }
+    return body.data;
+  },
   createSection(
     bookletId: string,
     req: { title: string; level: number; parentId?: string | null; prompt?: string; content?: string },

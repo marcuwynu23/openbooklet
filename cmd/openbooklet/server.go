@@ -102,6 +102,8 @@ func buildMux(svc *booklet.Service, p provider.Provider, model string, cfg *conf
 	mux.HandleFunc("POST /api/v1/booklets/{id}/sections", s.handleCreateSection)
 	mux.HandleFunc("POST /api/v1/booklets/{id}/generate", s.handleGenerate)
 	mux.HandleFunc("POST /api/v1/booklets/{id}/sections/{sectionID}/regenerate", s.handleRegenerate)
+	mux.HandleFunc("GET /api/v1/booklets/{id}/export", s.handleExport)
+	mux.HandleFunc("POST /api/v1/booklets/{id}/import", s.handleImport)
 	mux.HandleFunc("/", handleStatic(dist))
 	return mux
 }
@@ -475,7 +477,7 @@ func (s *apiServer) handleGenerate(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// handleRegenerate rewrites one cell with AI. Mode is one of regenerate,
+// handleRegenerate rewrites one section with AI. Mode is one of regenerate,
 // expand, shorten, or edit (edit requires an instruction).
 func (s *apiServer) handleRegenerate(w http.ResponseWriter, r *http.Request) {
 	var req struct {
@@ -511,6 +513,77 @@ func (s *apiServer) handleRegenerate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusOK, map[string]any{"data": toSectionDTO(sec)})
+}
+
+// handleExport downloads the booklet as a Markdown file.
+func (s *apiServer) handleExport(w http.ResponseWriter, r *http.Request) {
+	if format := r.URL.Query().Get("format"); format != "" && format != "md" {
+		writeError(w, http.StatusBadRequest, "bad_request", "only format=md is supported")
+		return
+	}
+	b, err := s.svc.GetBooklet(r.PathValue("id"))
+	if err != nil {
+		writeError(w, http.StatusNotFound, "not_found", "booklet not found")
+		return
+	}
+	out, err := booklet.ExportMarkdown(b.Sections)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "export_failed", err.Error())
+		return
+	}
+	w.Header().Set("Content-Type", "text/markdown; charset=utf-8")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%q", exportFilename(b.Title, b.ID)))
+	w.WriteHeader(http.StatusOK)
+	_, _ = io.WriteString(w, out)
+}
+
+// handleImport parses an uploaded Markdown file into new sections.
+func (s *apiServer) handleImport(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseMultipartForm(4 << 20); err != nil {
+		writeError(w, http.StatusBadRequest, "bad_request", "invalid multipart upload")
+		return
+	}
+	file, header, err := r.FormFile("file")
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "bad_request", "missing file field")
+		return
+	}
+	defer file.Close()
+	content, err := io.ReadAll(io.LimitReader(file, 4<<20))
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "bad_request", "reading upload failed")
+		return
+	}
+	sections, err := s.svc.ImportMarkdown(r.PathValue("id"), header.Filename, string(content))
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "bad_request", err.Error())
+		return
+	}
+	summaries := make([]sectionDTO, 0, len(sections))
+	for i := range sections {
+		summaries = append(summaries, toSectionDTO(&sections[i]))
+	}
+	writeJSON(w, http.StatusCreated, map[string]any{"data": summaries})
+}
+
+// exportFilename derives a safe download name from the booklet title.
+func exportFilename(title, id string) string {
+	var out strings.Builder
+	for _, r := range strings.ToLower(title) {
+		switch {
+		case r >= 'a' && r <= 'z', r >= '0' && r <= '9':
+			out.WriteRune(r)
+		default:
+			if out.Len() > 0 {
+				out.WriteByte('-')
+			}
+		}
+	}
+	name := strings.Trim(out.String(), "-")
+	if name == "" {
+		name = id
+	}
+	return name + ".md"
 }
 
 func decodeBody(r *http.Request, out any) error {

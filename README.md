@@ -10,7 +10,70 @@ You start by describing what you want in a chat-style prompt. The AI generates a
 
 ## Status
 
-> **Phase 0 — Specification / pre-MVP.** The project is currently in detailed design. See [PLAN.md](PLAN.md) for the full product specification (75 sections) and [ARCHITECTURE.md](ARCHITECTURE.md) for the technical design. The codebase is being built toward the v0.1 golden path (see [MVP](#mvp---golden-path-v01) below).
+> **Phases 1–7 (working slices) implemented.** The backend engine (booklet/section models, SQLite storage, versioned `.obk`, Markdown parser, OpenAI-compatible + Ollama providers with streaming, AI generation pipeline) and the web UI (sidebar, section editor with Markdown preview, chat-style generation panel, per-section AI actions, full-booklet preview, Markdown import/export) all run locally. See [PLAN.md](PLAN.md) for the full product specification and the implementation status appendix.
+
+---
+
+## Running It
+
+Prerequisites: Go 1.24+, Node 22+, `golangci-lint` (for `make lint`).
+
+```bash
+# Quality gates (fmt, vet, lint, tests, build)
+make go-check
+
+# Build the frontend once (served by the Go server)
+make frontend-build
+
+# Run the server (http://localhost:8080)
+make run
+```
+
+Open `http://localhost:8080`: create a booklet, describe the document in the
+Generate panel, and watch streamed Markdown turn into editable sections. Each
+section edits with live Markdown preview, renames inline, collapses accordion-style,
+and supports Regenerate / Expand / Shorten / AI-edit with history snapshots.
+The Preview tab renders the whole booklet — header, sections, footer — as one page.
+
+With no AI provider configured the app still works fully as a Markdown section
+editor; AI features report `503 no_provider` instead of breaking.
+
+### Configure an LLM Provider
+
+Configuration is environment variables (see `internal/config/config.go`):
+
+```bash
+# Ollama, local-first (no API keys)
+export OPENBOOKLET_PROVIDER=ollama
+export OPENBOOKLET_MODEL=llama3
+export OPENBOOKLET_PROVIDER_ENDPOINT=http://localhost:11434
+
+# OpenAI-compatible endpoint (OpenRouter, vLLM, LM Studio, LocalAI, ...)
+export OPENBOOKLET_PROVIDER=compatible
+export OPENBOOKLET_PROVIDER_ENDPOINT=https://api.openrouter.ai/api/v1
+export OPENBOOKLET_MODEL=anthropic/claude-sonnet
+export OPENBOOKLET_API_KEY=...   # never commit keys
+```
+
+### HTTP API (`/api/v1/`)
+
+| Method & Path | Purpose |
+|---------------|---------|
+| `GET /healthz` | Liveness |
+| `GET /api/v1/version` | Version + provider |
+| `GET /api/v1/booklets` | List booklets |
+| `POST /api/v1/booklets` | Create a booklet |
+| `GET /api/v1/booklets/{id}` | Full booklet with sections |
+| `PUT /api/v1/booklets/{id}` | Update title/type/audience/instructions/header/footer/showFooter |
+| `DELETE /api/v1/booklets/{id}` | Delete (204) |
+| `POST /api/v1/booklets/{id}/sections` | Add a section manually |
+| `PUT /api/v1/booklets/{id}/sections/{sid}` | Edit title/prompt/content |
+| `POST /api/v1/booklets/{id}/sections/{sid}/regenerate` | AI rewrite (`regenerate\|expand\|shorten\|edit`) |
+| `POST /api/v1/booklets/{id}/generate` | SSE stream: `start → token* → complete \| error` |
+| `GET /api/v1/booklets/{id}/export?format=md` | Download canonical Markdown |
+| `POST /api/v1/booklets/{id}/import` | Upload a Markdown file as sections |
+
+Responses use the `{ data, error?: { code, message } }` envelope.
 
 ---
 
@@ -81,15 +144,17 @@ Everything in the MVP serves this chain. Everything else is deferred until the c
 
 ---
 
-## Built-In Document Templates
+## Built-In Document Templates (Planned)
 
 Article · SOP · MOP · Guideline · Runbook · Technical Documentation · Architecture Document · Custom YAML-defined templates.
 
 ---
 
-## Planned Document Operations
+## Document Operations
 
-Generate · Explain · Rewrite · Expand · Shorten · Summarize · Correct · Improve · Structure · Review · Validate · Translate · Compare · Extract · Convert (e.g. Tech Doc → SOP → MOP).
+Implemented now: Generate · Regenerate · Expand · Shorten · AI Edit (custom instruction).
+
+Planned: Explain · Rewrite · Summarize · Correct · Improve · Structure · Review · Validate · Translate · Compare · Extract · Convert (e.g. Tech Doc → SOP → MOP).
 
 ---
 
@@ -99,9 +164,9 @@ Generate · Explain · Rewrite · Expand · Shorten · Summarize · Correct · I
 |-------|--------|-------|
 | **Backend Language** | Go | Static binary, excellent stdlib, great concurrency for streaming. |
 | **Primary Storage** | SQLite + Filesystem | SQLite for indexes/metadata, filesystem for `.obk`, attachments, exports. Portable to Postgres/object storage later. |
-| **Frontend** | React 18 + TypeScript (strict) + Vite | No SSR initially; pure single-page app. |
-| **Frontend State** | Zustand (domain-split stores) | `bookletStore`, `sectionStore`, `providerStore`, `uiStore`. |
-| **Markdown Editing** | TBD (CodeMirror / Monaco / TipTap) | Must support split edit+preview, syntax highlighting, Mermaid, tables, code blocks, task lists, undo/redo. |
+| **Frontend** | React 18 + TypeScript (strict) + Vite | Pure single-page app, served from `frontend/dist` by the Go server. |
+| **Frontend State** | Zustand (domain-split stores) | `useBookletStore` + service layer in `src/api.ts`; components never fetch directly. |
+| **Markdown Editing** | Textarea editor + `marked` preview | Edit/Preview tabs per section, full-booklet Preview tab. |
 | **Streaming Transport** | HTTP SSE (`text/event-stream`) | Events: `start → token* → metadata? → complete \| error`. AbortController for cancel. |
 | **API Style** | REST + JSON | Versioned `/api/v1/`. Pagination via cursors where needed. |
 | **Identity / Auth** | None for MVP (local-first) | Plug-point for Phase v1.1+. |
@@ -111,13 +176,13 @@ Generate · Explain · Rewrite · Expand · Shorten · Summarize · Correct · I
 Go package layout (see [ARCHITECTURE.md](ARCHITECTURE.md)):
 
 ```
-cmd/openbooklet/main.go   ← composition root
+cmd/openbooklet/main.go   ← composition root (server, routes, provider wiring)
 internal/
   booklet/   section/   context/   llm/   provider/
   storage/   file/      template/  review/ reference/
   export/    git/       config/    security/
-providers/   ← openai, anthropic, gemini, ollama, compatible
-web/         ← React/TS/Vite
+providers/   ← openai (OpenAI-compatible HTTP), ollama
+frontend/    ← React/TS/Vite (src/api.ts, src/stores.ts, src/components/)
 templates/   ← article.yaml, sop.yaml, mop.yaml, ...
 ```
 
@@ -130,13 +195,13 @@ Full phase definitions are in [PLAN.md §47–§68](PLAN.md).
 | Phase | Name | Deliverable |
 |-------|------|-------------|
 | 0 | Specification | ARCHITECTURE.md, BOOKLET_FORMAT.md, API.md, CONTEXT.md, PROVIDERS.md |
-| 1 | Core Go Engine | Booklet/Section models + services + in-memory repos + tests |
-| 2 | Storage | SQLite + FS repositories plugged in; same tests pass |
-| 3 | `.obk` Format | Serializer/Deserializer; lossless round-trip tests with golden files |
-| 4 | Markdown Parser | `md ⇄ sections`, lossless. Milestone — must be solid. |
-| 5 | LLM Engine | Provider interface + 2 real providers + streaming + cancel |
-| 6 | AI Booklet Creation | Chat prompt → AI → Markdown → Parser → Cells. **First demo milestone.** |
-| 7 | Web UI | Sidebar + cell editor + prompt editor + preview + AI controls |
+| 1 | Core Go Engine (done) | Booklet/Section models + services + in-memory repos + tests |
+| 2 | Storage (done) | SQLite + FS repositories plugged in; same tests pass |
+| 3 | `.obk` Format (done) | Serializer/Deserializer; lossless round-trip tests with golden files |
+| 4 | Markdown Parser (done) | `md ⇄ sections`, lossless; Markdown export/import endpoints |
+| 5 | LLM Engine (done) | Provider interface + OpenAI-compatible + Ollama + streaming + cancel |
+| 6 | AI Booklet Creation (done) | Chat prompt → AI → Markdown → Parser → Cells, in the web UI |
+| 7 | Web UI (working slice) | Sidebar + section editor + Markdown preview + AI controls + full preview |
 | 8 | Context Engine | Cross-section refs, file context, token estimation, preview |
 | 9 | Templates | 7 built-in + custom YAML templates |
 | 10 | File Intelligence | `.md .txt .yaml .json .xml .csv .log .conf` parsers |
@@ -149,18 +214,7 @@ Full phase definitions are in [PLAN.md §47–§68](PLAN.md).
 
 ---
 
-## Getting Started (Once v0.1 ships)
-
-> **Developer previews only during Phases 1–5.** End-user install instructions will be added here once Phase 7 lands.
-
-### From a Release
-
-Download the binary for your platform (Linux/amd64, Linux/arm64, macOS/amd64, macOS/arm64, Windows/amd64) from the Releases page, or pull the Docker image:
-
-```bash
-# Docker preview (future)
-docker run -p 3000:3000 -v ./data:/data ghcr.io/openbooklet/openbooklet:latest openbooklet serve
-```
+## Getting Started
 
 ### From Source (Developers)
 
@@ -171,39 +225,18 @@ See [CONTRIBUTING.md § Prerequisites](CONTRIBUTING.md#prerequisites) for the ex
 git clone https://github.com/your-org/openbooklet.git
 cd openbooklet
 
-# 2. Backend
-make tools          # install go tooling (gofmt, staticcheck, golangci-lint)
-make test           # run Go test suite
-make build          # produces ./bin/openbooklet
+# 2. Backend quality gates (fmt, vet, lint, tests, build)
+make go-check
 
-# 3. Frontend
-cd web && npm install && npm run build
+# 3. Frontend (first install, then build the bundle the server serves)
+cd frontend && npm install && cd ..
+make frontend-build
 
-# 4. Run locally
-./bin/openbooklet serve --dev    # --dev = plain HTTP on localhost
+# 4. Run locally (http://localhost:8080)
+make run
 ```
 
-### Configure an LLM Provider
-
-Ollama local-first example (no API keys required):
-
-```yaml
-# ~/.config/openbooklet/config.yaml
-provider:
-  name: ollama
-  endpoint: http://localhost:11434
-  model: llama3
-```
-
-OpenAI-compatible endpoint (works with OpenRouter, Together, vLLM, LM Studio, Azure with adapter, etc.):
-
-```yaml
-provider:
-  name: compatible
-  endpoint: https://api.openrouter.ai/api/v1
-  model: anthropic/claude-sonnet
-  api_key: ${OPENROUTER_API_KEY}   # never commit keys
-```
+Releases and Docker images will be published once v1.0 ships.
 
 ---
 
@@ -223,6 +256,15 @@ booklet:
 instructions: |
   Use formal technical language.
   Do not invent infrastructure information.
+
+header: |
+  Date: January 1, 2020
+
+  Kubernetes deployment runbook.
+
+footer: |
+  Reviewed by platform engineering.
+show_footer: true
 
 sections:
   - id: purpose
@@ -254,7 +296,7 @@ Full schema: see [PLAN.md §22 `.obk` File Format](PLAN.md) and (forthcoming) `d
 ## Testing Philosophy
 
 - **Go:** `go test ./... -race -count=1`. Unit → Integration (SQLite :memory:) → httptest API tests → provider contract test suite.
-- **Frontend:** Vitest (unit/component) + Playwright (E2E golden path).
+- **Frontend:** `tsc --noEmit` + `vite build` in `frontend/` (Vitest + Playwright planned).
 - **Non-negotiable round-trip tests:**
   - Markdown ⇄ Cells lossless
   - `.obk` ⇄ Model lossless
@@ -278,7 +320,7 @@ We welcome code, docs, templates, bug reports, and design discussions. Please re
 Quick checklist before you open a PR:
 - [ ] Branch named `feat/<scope>-<thing>` / `fix/<thing>` / `docs/<thing>` …
 - [ ] Conventional commit message
-- [ ] `make test` (backend) and `npm run test && npm run lint && npx tsc --noEmit` (frontend) pass
+- [ ] `make test` (backend) and `npm run build` (frontend, runs `tsc --noEmit`) pass
 - [ ] Round-trip tests updated if parser/serializer changed
 - [ ] Changelog entry added (see [CHANGELOG.md](CHANGELOG.md))
 - [ ] Signed-off-by (`git commit -s`) if contributing code

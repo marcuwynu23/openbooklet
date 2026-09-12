@@ -1,6 +1,7 @@
 package booklet
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/openbooklet/openbooklet/internal/section"
@@ -365,5 +366,81 @@ func TestServiceUpdateSection(t *testing.T) {
 	}
 	if _, err := svc.UpdateSection("b1", "missing", nil, nil, &newContent); err == nil {
 		t.Error("missing section should return an error")
+	}
+}
+
+func TestImportMarkdown(t *testing.T) {
+	repo := NewInMemoryBookletRepository()
+	svc := NewService(repo)
+	svc.CreateBooklet("b1", "Test", "sop", "", "") //nolint:errcheck
+
+	sections, err := svc.ImportMarkdown("b1", "notes.md", "Intro line.\n\n# First\n\nBody one.\n\n## Second\n\nBody two.\n")
+	if err != nil {
+		t.Fatalf("ImportMarkdown failed: %v", err)
+	}
+	if len(sections) != 2 {
+		t.Fatalf("got %d sections, want 2", len(sections))
+	}
+	if !strings.Contains(sections[0].Content, "Intro line.") {
+		t.Errorf("preamble lost: %q", sections[0].Content)
+	}
+	for _, sec := range sections {
+		if sec.Status != section.SectionStatusDraft {
+			t.Errorf("section %q status = %q, want draft", sec.ID, sec.Status)
+		}
+	}
+
+	again, err := svc.ImportMarkdown("b1", "notes.md", "# First\n\nChanged.\n")
+	if err != nil {
+		t.Fatalf("re-import failed: %v", err)
+	}
+	if again[0].ID == sections[0].ID {
+		t.Errorf("re-import reused ID %q instead of minting a fresh one", again[0].ID)
+	}
+
+	stored, err := repo.GetBooklet("b1")
+	if err != nil {
+		t.Fatalf("GetBooklet failed: %v", err)
+	}
+	if len(stored.Sections) != 3 {
+		t.Errorf("stored sections = %d, want 3", len(stored.Sections))
+	}
+}
+
+func TestImportMarkdownHeadingless(t *testing.T) {
+	repo := NewInMemoryBookletRepository()
+	svc := NewService(repo)
+	svc.CreateBooklet("b1", "Test", "sop", "", "") //nolint:errcheck
+
+	sections, err := svc.ImportMarkdown("b1", "notes.md", "Just some prose.\n")
+	if err != nil {
+		t.Fatalf("ImportMarkdown failed: %v", err)
+	}
+	if len(sections) != 1 || sections[0].Title != "notes" || sections[0].Level != 1 {
+		t.Errorf("sections = %+v, want one level-1 section titled notes", sections)
+	}
+
+	if _, err := svc.ImportMarkdown("b1", "empty.md", "  \n"); err == nil {
+		t.Error("empty content should return an error")
+	}
+	if _, err := svc.ImportMarkdown("missing", "notes.md", "# A\n"); err == nil {
+		t.Error("missing booklet should return an error")
+	}
+}
+
+func TestExportMarkdown(t *testing.T) {
+	out, err := ExportMarkdown([]Section{
+		{ID: "a", Title: "Title", Level: 1, Content: "Intro.\n"},
+		{ID: "b", Title: "Sub", Level: 2, Content: "- x\n"},
+	})
+	if err != nil {
+		t.Fatalf("ExportMarkdown failed: %v", err)
+	}
+	want := "# Title\n\nIntro.\n\n## Sub\n\n- x\n"
+	if out != want {
+		t.Errorf("export = %q, want %q", out, want)
+	}
+	if _, err := ExportMarkdown([]Section{{ID: "bad", Title: "Bad", Level: 9}}); err == nil {
+		t.Error("invalid level should return an error")
 	}
 }

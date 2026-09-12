@@ -414,3 +414,26 @@ Therefore:
 If a proposed shortcut violates these four, reject the shortcut. There is no schedule pressure that justifies breaking the reproducibility / revertibility / portability / inspectability contract.
 
 Build with the same care you would want in the runbook that gets woken up with at 3 AM.
+
+---
+
+## 13. Frontend & API Conventions (As Built)
+
+### 13.1 Frontend stack and layout (`frontend/`)
+
+- **React 18 + TypeScript strict + Vite + Zustand + `marked`** for Markdown preview. No Next.js.
+- **Structure:** `src/api.ts` (service layer — components never `fetch` directly), `src/stores.ts` (Zustand), `src/components/` (one concern per file), `src/markdown.ts` (shared renderer).
+- **Strictness:** `strict`, `noImplicitAny`, `noUncheckedIndexedAccess`, `noUnusedLocals`, `noUnusedParameters`. `npm run build` runs `tsc --noEmit` first; fix type errors, never loosen the config.
+- **UI vocabulary is "section"**, numbered `1. ## Title` in document order. The word "cell" must not appear in user-facing strings.
+- **Icons are inline SVG**, not webfonts — the app must work fully offline.
+- **Windows note:** `make` runs recipes under `sh`, so frontend targets must call `npm.cmd`/`npx.cmd`, never bare `npm`/`npx`.
+- The Go server serves `frontend/dist` with an SPA fallback to `index.html`. `frontend/dist/` and `node_modules/` are gitignored; CI/dev must run `make frontend-build` before `make run`.
+
+### 13.2 HTTP API conventions (`cmd/openbooklet/server.go`)
+
+- Handlers live on `apiServer` (built by `buildMux`, which tests reuse with fakes). This is the placeholder for a future `internal/api` package — keep handlers thin, services smart.
+- **Envelope:** success is `{ "data": T }`, errors are `{ "error": { "code", "message" } }` with proper status codes (400 validation, 404 missing, 503 no provider, 502 generation failed).
+- **DTOs** (`bookletDTO`, `sectionDTO`) carry JSON tags; domain structs stay serialization-free. `parentId` is `null` when top-level; times are RFC3339 strings.
+- **SSE generation endpoint** emits `start → token* → complete | error` with `data:` JSON payloads. The `complete` event fires only after cells are parsed and saved.
+- **AI-optional is load-bearing:** an empty provider name means `provider == nil`; every AI route must answer `503 no_provider`, never 500.
+- Multipart imports cap uploads at 4 MiB (`ParseMultipartForm` + `LimitReader`).

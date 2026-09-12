@@ -71,7 +71,7 @@ export function AddSectionForm({ bookletId, sections }: { bookletId: string; sec
           <select value={level} onChange={(e) => setLevel(Number(e.target.value))} aria-label="Heading level">
             {[1, 2, 3, 4, 5, 6].map((n) => (
               <option key={n} value={n}>
-                {'#'.repeat(n)}
+                H{n}
               </option>
             ))}
           </select>

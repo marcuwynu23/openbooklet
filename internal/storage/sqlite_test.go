@@ -1,11 +1,15 @@
 package storage
 
 import (
+	"database/sql"
+	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/openbooklet/openbooklet/internal/booklet"
 	"github.com/openbooklet/openbooklet/internal/section"
+
+	_ "modernc.org/sqlite"
 )
 
 func TestSQLiteSaveAndGetBooklet(t *testing.T) {
@@ -209,5 +213,153 @@ func TestSQLiteFullRoundTrip(t *testing.T) {
 	}
 	if got.Header != "Date: September 12, 2026\n" || got.Footer != "End of document.\n" || !got.ShowFooter {
 		t.Errorf("header/footer = %q/%q/%v", got.Header, got.Footer, got.ShowFooter)
+	}
+}
+
+// TestSQLiteFileBackedListBooklets mirrors production: a real database file
+// (like data/openbooklet.db) must save and list booklets. This guards the
+// file-backed migration path that :memory: tests never exercise.
+func TestSQLiteFileBackedListBooklets(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "openbooklet.db")
+	s, err := NewSQLiteStorage(path)
+	if err != nil {
+		t.Fatalf("NewSQLiteStorage failed: %v", err)
+	}
+	defer s.Close()
+
+	repo := NewSQLiteBookletRepository(s.DB())
+	for _, id := range []string{"b1", "b2"} {
+		b := &booklet.Booklet{ID: id, Title: "Booklet " + id, Status: booklet.BookletStatusDraft}
+		b.CreatedAt = time.Now()
+		b.UpdatedAt = time.Now()
+		if err := repo.SaveBooklet(b); err != nil {
+			t.Fatalf("SaveBooklet failed: %v", err)
+		}
+	}
+
+	all, err := repo.GetAllBooklets()
+	if err != nil {
+		t.Fatalf("GetAllBooklets failed: %v", err)
+	}
+	if len(all) != 2 {
+		t.Fatalf("GetAllBooklets() = %d, want 2", len(all))
+	}
+
+	// Reopen the same file: migrations must be idempotent.
+	if err := s.Close(); err != nil {
+		t.Fatalf("Close failed: %v", err)
+	}
+	s2, err := NewSQLiteStorage(path)
+	if err != nil {
+		t.Fatalf("reopen failed: %v", err)
+	}
+	defer s2.Close()
+	if _, err := NewSQLiteBookletRepository(s2.DB()).GetAllBooklets(); err != nil {
+		t.Fatalf("GetAllBooklets after reopen failed: %v", err)
+	}
+}
+
+// TestSQLiteMigrationFromOldSchema opens a database created before the
+// header/footer/show_footer columns existed and verifies the ALTER TABLE
+// migration makes it fully readable.
+func TestSQLiteMigrationFromOldSchema(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "old.db")
+	raw, err := sql.Open("sqlite", path)
+	if err != nil {
+		t.Fatalf("sql.Open failed: %v", err)
+	}
+	_, err = raw.Exec(`CREATE TABLE booklets (
+		id TEXT PRIMARY KEY,
+		title TEXT NOT NULL,
+		type TEXT,
+		version TEXT,
+		status TEXT NOT NULL DEFAULT 'draft',
+		audience TEXT,
+		instructions TEXT,
+		template TEXT,
+		created_at TEXT NOT NULL,
+		updated_at TEXT NOT NULL
+	)`)
+	if err != nil {
+		t.Fatalf("creating old schema failed: %v", err)
+	}
+	_, err = raw.Exec(`INSERT INTO booklets
+		(id, title, type, version, status, audience, instructions, template, created_at, updated_at)
+		VALUES ('b1', 'Legacy', 'sop', '1.0', 'draft', '', '', '', '2026-01-01T00:00:00Z', '2026-01-02T00:00:00Z')`)
+	if err != nil {
+		t.Fatalf("seeding old schema failed: %v", err)
+	}
+	if err := raw.Close(); err != nil {
+		t.Fatalf("raw close failed: %v", err)
+	}
+
+	s, err := NewSQLiteStorage(path)
+	if err != nil {
+		t.Fatalf("NewSQLiteStorage on old schema failed: %v", err)
+	}
+	defer s.Close()
+
+	repo := NewSQLiteBookletRepository(s.DB())
+	got, err := repo.GetBooklet("b1")
+	if err != nil {
+		t.Fatalf("GetBooklet failed: %v", err)
+	}
+	if got.Title != "Legacy" || got.Header != "" || got.ShowFooter {
+		t.Errorf("booklet = %+v, want legacy row with empty header/footer", got)
+	}
+	if _, err := repo.GetAllBooklets(); err != nil {
+		t.Fatalf("GetAllBooklets failed: %v", err)
+	}
+}
+
+// TestSQLiteMigrationBackfillsNulls simulates a database migrated by an
+// earlier nullable ALTER (leaving NULLs behind) and verifies opening it
+// backfills safe defaults instead of failing every read.
+func TestSQLiteMigrationBackfillsNulls(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "nullable.db")
+	raw, err := sql.Open("sqlite", path)
+	if err != nil {
+		t.Fatalf("sql.Open failed: %v", err)
+	}
+	_, err = raw.Exec(`CREATE TABLE booklets (
+		id TEXT PRIMARY KEY,
+		title TEXT NOT NULL,
+		type TEXT,
+		version TEXT,
+		status TEXT NOT NULL DEFAULT 'draft',
+		audience TEXT,
+		instructions TEXT,
+		template TEXT,
+		header TEXT,
+		footer TEXT,
+		show_footer INTEGER,
+		created_at TEXT NOT NULL,
+		updated_at TEXT NOT NULL
+	)`)
+	if err != nil {
+		t.Fatalf("creating schema failed: %v", err)
+	}
+	_, err = raw.Exec(`INSERT INTO booklets
+		(id, title, type, version, status, audience, instructions, template, created_at, updated_at)
+		VALUES ('b1', 'Nulls', '', '', 'draft', '', '', '', '2026-01-01T00:00:00Z', '2026-01-02T00:00:00Z')`)
+	if err != nil {
+		t.Fatalf("seeding failed: %v", err)
+	}
+	if err := raw.Close(); err != nil {
+		t.Fatalf("raw close failed: %v", err)
+	}
+
+	s, err := NewSQLiteStorage(path)
+	if err != nil {
+		t.Fatalf("NewSQLiteStorage failed: %v", err)
+	}
+	defer s.Close()
+
+	got, err := NewSQLiteBookletRepository(s.DB()).GetBooklet("b1")
+	if err != nil {
+		t.Fatalf("GetBooklet failed: %v", err)
+	}
+	if got.Title != "Nulls" || got.Header != "" || got.Footer != "" || got.ShowFooter {
+		t.Errorf("booklet = %+v, want backfilled defaults", got)
 	}
 }

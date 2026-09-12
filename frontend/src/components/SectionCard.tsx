@@ -132,7 +132,15 @@ export function SectionCard({
           />
         ) : (
           <>
-            <h2>{section.title}</h2>
+            <h2
+              title="Click to rename"
+              onClick={() => {
+                setTitle(section.title);
+                setTitleEditing(true);
+              }}
+            >
+              {section.title}
+            </h2>
             <button
               type="button"
               title="Rename section"
