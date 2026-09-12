@@ -189,3 +189,62 @@ func TestRegenerateEndpoint(t *testing.T) {
 		t.Errorf("history = %d records, want 1", len(stored.History))
 	}
 }
+
+func TestCreateSectionEndpoint(t *testing.T) {
+	server, svc := testMux(t, &fakeProvider{})
+	if _, err := svc.CreateBooklet("b1", "Guide", "sop", "", ""); err != nil {
+		t.Fatalf("CreateBooklet failed: %v", err)
+	}
+
+	resp, err := http.Post(server.URL+"/api/v1/booklets/b1/sections", "application/json",
+		strings.NewReader(`{"title":"Manual","level":2,"content":"Hand-written.\n"}`))
+	if err != nil {
+		t.Fatalf("POST section failed: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusCreated {
+		t.Fatalf("status = %d, want 201", resp.StatusCode)
+	}
+	var body struct {
+		Data struct {
+			ID      string `json:"id"`
+			Title   string `json:"title"`
+			Status  string `json:"status"`
+			Content string `json:"content"`
+		} `json:"data"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+		t.Fatalf("decoding response: %v", err)
+	}
+	if body.Data.ID == "" || body.Data.Title != "Manual" || body.Data.Status != "draft" {
+		t.Errorf("section = %+v", body.Data)
+	}
+
+	stored, err := svc.GetSection("b1", body.Data.ID)
+	if err != nil {
+		t.Fatalf("GetSection failed: %v", err)
+	}
+	if stored.Content != "Hand-written.\n" {
+		t.Errorf("content = %q", stored.Content)
+	}
+
+	bad, err := http.Post(server.URL+"/api/v1/booklets/b1/sections", "application/json",
+		strings.NewReader(`{"title":"Bad","level":9}`))
+	if err != nil {
+		t.Fatalf("POST section failed: %v", err)
+	}
+	defer bad.Body.Close()
+	if bad.StatusCode != http.StatusBadRequest {
+		t.Errorf("status = %d, want 400", bad.StatusCode)
+	}
+
+	missing, err := http.Post(server.URL+"/api/v1/booklets/nope/sections", "application/json",
+		strings.NewReader(`{"title":"X"}`))
+	if err != nil {
+		t.Fatalf("POST section failed: %v", err)
+	}
+	defer missing.Body.Close()
+	if missing.StatusCode != http.StatusNotFound {
+		t.Errorf("status = %d, want 404", missing.StatusCode)
+	}
+}

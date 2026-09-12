@@ -66,6 +66,15 @@ export const api = {
       body: JSON.stringify({ title, type: docType }),
     });
   },
+  createSection(
+    bookletId: string,
+    req: { title: string; level: number; parentId?: string | null; prompt?: string; content?: string },
+  ): Promise<Section> {
+    return request(`/api/v1/booklets/${encodeURIComponent(bookletId)}/sections`, {
+      method: 'POST',
+      body: JSON.stringify(req),
+    });
+  },
   updateSection(
     bookletId: string,
     sectionId: string,

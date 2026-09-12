@@ -97,6 +97,7 @@ func buildMux(svc *booklet.Service, p provider.Provider, model string, cfg *conf
 	mux.HandleFunc("POST /api/v1/booklets", s.handleCreateBooklet)
 	mux.HandleFunc("GET /api/v1/booklets/{id}", s.handleBooklet)
 	mux.HandleFunc("PUT /api/v1/booklets/{id}/sections/{sectionID}", s.handleUpdateSection)
+	mux.HandleFunc("POST /api/v1/booklets/{id}/sections", s.handleCreateSection)
 	mux.HandleFunc("POST /api/v1/booklets/{id}/generate", s.handleGenerate)
 	mux.HandleFunc("POST /api/v1/booklets/{id}/sections/{sectionID}/regenerate", s.handleRegenerate)
 	mux.HandleFunc("/", handleStatic(dist))
@@ -270,6 +271,49 @@ func (s *apiServer) handleCreateBooklet(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	writeJSON(w, http.StatusCreated, map[string]any{"data": toBookletDTO(b)})
+}
+
+func (s *apiServer) handleCreateSection(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Title    string  `json:"title"`
+		Level    int     `json:"level"`
+		ParentID *string `json:"parentId"`
+		Prompt   string  `json:"prompt"`
+		Content  string  `json:"content"`
+	}
+	if err := decodeBody(r, &req); err != nil {
+		writeError(w, http.StatusBadRequest, "bad_request", err.Error())
+		return
+	}
+	if strings.TrimSpace(req.Title) == "" {
+		writeError(w, http.StatusBadRequest, "bad_request", "title is required")
+		return
+	}
+	level := req.Level
+	if level == 0 {
+		level = 2
+	}
+	now := time.Now().UTC()
+	sec := &booklet.Section{
+		ID:        uuid.NewString(),
+		ParentID:  req.ParentID,
+		Title:     req.Title,
+		Level:     level,
+		Prompt:    req.Prompt,
+		Content:   req.Content,
+		Status:    "draft",
+		CreatedAt: now,
+		UpdatedAt: now,
+	}
+	if err := s.svc.AddSection(r.PathValue("id"), sec); err != nil {
+		if _, lookupErr := s.svc.GetBooklet(r.PathValue("id")); lookupErr != nil {
+			writeError(w, http.StatusNotFound, "not_found", "booklet not found")
+		} else {
+			writeError(w, http.StatusBadRequest, "bad_request", err.Error())
+		}
+		return
+	}
+	writeJSON(w, http.StatusCreated, map[string]any{"data": toSectionDTO(sec)})
 }
 
 func (s *apiServer) handleUpdateSection(w http.ResponseWriter, r *http.Request) {

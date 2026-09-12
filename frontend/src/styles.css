@@ -213,3 +213,107 @@ body {
   border: 1px solid #d0d7de;
   border-radius: 6px;
 }
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin: 12px 0 0;
+  border-bottom: 1px solid #d0d7de;
+}
+
+.tabs button {
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  background: transparent;
+  cursor: pointer;
+  color: #57606a;
+}
+
+.tabs button.active {
+  color: #1f2328;
+  font-weight: 600;
+  background: #f6f8fa;
+  border-color: #d0d7de;
+}
+
+.markdown {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4 {
+  margin: 12px 0 6px;
+}
+
+.markdown pre {
+  background: #f6f8fa;
+  border-radius: 6px;
+  padding: 12px;
+  overflow-x: auto;
+}
+
+.markdown code {
+  font-family: monospace;
+  background: #f6f8fa;
+  border-radius: 4px;
+  padding: 0 4px;
+}
+
+.markdown pre code {
+  padding: 0;
+}
+
+.markdown table {
+  border-collapse: collapse;
+  margin: 8px 0;
+}
+
+.markdown th,
+.markdown td {
+  border: 1px solid #d0d7de;
+  padding: 6px 10px;
+}
+
+.markdown blockquote {
+  border-left: 3px solid #d0d7de;
+  margin: 8px 0;
+  padding: 4px 12px;
+  color: #57606a;
+}
+
+.title-input {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 16px;
+  font-weight: 600;
+  border: 1px solid #0969da;
+  border-radius: 6px;
+  padding: 8px;
+  margin-top: 8px;
+}
+
+.add-cell {
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed #0969da;
+  border-radius: 8px;
+  background: transparent;
+  color: #0969da;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.add-cell:hover {
+  background: #ddf4ff;
+}
+
+.add-form select {
+  padding: 6px 8px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+}

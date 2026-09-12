@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
+import { marked } from 'marked';
 import { api, type RegenerateMode, type Section } from '../api';
 import { useBookletStore } from '../stores';
+
+marked.setOptions({ breaks: true });
 
 function statusColor(status: string): string {
   switch (status) {
@@ -17,9 +20,17 @@ function statusColor(status: string): string {
   }
 }
 
+function renderMarkdown(content: string): string {
+  const html = marked.parse(content, { async: false });
+  return typeof html === 'string' ? html : '';
+}
+
+type Tab = 'preview' | 'edit';
+
 export function CellCard({ bookletId, section }: { bookletId: string; section: Section }) {
   const refresh = useBookletStore((s) => s.refresh);
-  const [editing, setEditing] = useState(false);
+  const [tab, setTab] = useState<Tab>('preview');
+  const [title, setTitle] = useState(section.title);
   const [content, setContent] = useState(section.content);
   const [saving, setSaving] = useState(false);
   const [aiBusy, setAiBusy] = useState<RegenerateMode | null>(null);
@@ -28,11 +39,24 @@ export function CellCard({ bookletId, section }: { bookletId: string; section: S
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    setTitle(section.title);
     setContent(section.content);
-    setEditing(false);
-  }, [section.content, section.id]);
+  }, [section.id, section.title, section.content]);
 
-  const dirty = content !== section.content;
+  const dirty = title !== section.title || content !== section.content;
+
+  async function save(): Promise<void> {
+    setSaving(true);
+    setError(null);
+    try {
+      await api.updateSection(bookletId, section.id, { title, content });
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'save failed');
+    } finally {
+      setSaving(false);
+    }
+  }
 
   async function ai(mode: RegenerateMode): Promise<void> {
     if (aiBusy !== null) return;
@@ -51,19 +75,6 @@ export function CellCard({ bookletId, section }: { bookletId: string; section: S
     }
   }
 
-  async function save(): Promise<void> {
-    setSaving(true);
-    setError(null);
-    try {
-      await api.updateSection(bookletId, section.id, { content });
-      await refresh();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'save failed');
-    } finally {
-      setSaving(false);
-    }
-  }
-
   return (
     <article className="cell">
       <header className="cell-head">
@@ -79,20 +90,50 @@ export function CellCard({ bookletId, section }: { bookletId: string; section: S
           <pre>{section.prompt}</pre>
         </details>
       )}
-      {editing ? (
-        <textarea
-          className="editor"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          rows={Math.max(6, content.split('\n').length + 1)}
+      <div className="tabs" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === 'preview'}
+          className={tab === 'preview' ? 'active' : ''}
+          onClick={() => setTab('preview')}
+        >
+          Preview
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={tab === 'edit'}
+          className={tab === 'edit' ? 'active' : ''}
+          onClick={() => setTab('edit')}
+        >
+          Edit{dirty ? ' ●' : ''}
+        </button>
+      </div>
+      {tab === 'preview' ? (
+        <div
+          className="markdown"
+          dangerouslySetInnerHTML={{
+            __html: section.content === '' ? '<i>(empty)</i>' : renderMarkdown(section.content),
+          }}
         />
       ) : (
-        <pre className="preview">{section.content === '' ? <i>(empty)</i> : section.content}</pre>
+        <>
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            aria-label="Section title"
+            className="title-input"
+          />
+          <textarea
+            className="editor"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            rows={Math.max(6, content.split('\n').length + 1)}
+          />
+        </>
       )}
       <footer className="cell-foot">
-        <button type="button" onClick={() => setEditing((v) => !v)}>
-          {editing ? 'Preview' : 'Edit'}
-        </button>
         <button type="button" disabled={!dirty || saving} onClick={() => void save()}>
           {saving ? 'Saving…' : 'Save'}
         </button>

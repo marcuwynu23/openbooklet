@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { CellCard } from './components/CellCard';
 import { GeneratePanel } from './components/GeneratePanel';
+import { AddCellForm } from './components/AddCellForm';
 import { useBookletStore } from './stores';
 import './styles.css';
 
@@ -39,6 +40,7 @@ export function App() {
             {booklet.sections.map((section) => (
               <CellCard key={section.id} bookletId={booklet.id} section={section} />
             ))}
+            <AddCellForm bookletId={booklet.id} sections={booklet.sections} />
           </>
         )}
       </main>
