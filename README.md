@@ -65,7 +65,7 @@ what's next: [ROADMAP.md](ROADMAP.md).
 Apache License 2.0 — see [LICENSE](LICENSE).
 
 ```
-Copyright 2026 OpenBooklet Contributors
+Copyright 2026 iammwwhobuild and marcuwynu23
 ```
 
 *Built by and for the people who get paged at 3 AM.*
