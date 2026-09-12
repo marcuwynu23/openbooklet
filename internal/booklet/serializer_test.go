@@ -12,7 +12,7 @@ import (
 	"github.com/openbooklet/openbooklet/internal/section"
 )
 
-var updateOBKGolden = flag.Bool("update", false, "update .obk golden files")
+var updateGolden = flag.Bool("update", false, "update golden files")
 
 func obkTestBooklet() *Booklet {
 	created := time.Date(2026, 9, 12, 12, 0, 0, 0, time.UTC)
@@ -107,7 +107,7 @@ func TestMarshalBookletGolden(t *testing.T) {
 	}
 
 	path := filepath.Join("testdata", "sop.obk.golden")
-	if *updateOBKGolden {
+	if *updateGolden {
 		if err := os.WriteFile(path, got, 0o644); err != nil {
 			t.Fatalf("writing golden file failed: %v", err)
 		}
