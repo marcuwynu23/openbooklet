@@ -1,0 +1,82 @@
+version: "1"
+booklet:
+    id: kubernetes-sop
+    title: Kubernetes Deployment SOP
+    type: sop
+    version: "1.0"
+    status: draft
+    audience: l1-operations
+    instructions: |
+        Use formal technical language.
+        Do not invent infrastructure information.
+    template: sop
+    created_at: "2026-09-12T12:00:00Z"
+    updated_at: "2026-09-12T12:30:00Z"
+sections:
+    - id: purpose
+      title: Purpose
+      level: 2
+      prompt: |
+        Explain the purpose of this SOP.
+      content: |
+        This SOP describes the standard Kubernetes deployment procedure.
+      context_refs:
+        - cluster-docs
+      status: generated
+      generation:
+        provider: test-provider
+        model: test-model
+        prompt_snapshot: |
+            Explain the purpose of this SOP.
+        context_refs:
+            - cluster-docs
+        temperature: 0.2
+        max_tokens: 1024
+        input_tokens: 128
+        output_tokens: 256
+        duration_nanos: 1500000000
+        created_at: "2026-09-12T12:00:00Z"
+      history:
+        - version: 1
+          content: |
+            This SOP describes deployments.
+          status: generated
+          description: initial generation
+          created_at: "2026-09-12T12:00:00Z"
+      created_at: "2026-09-12T12:00:00Z"
+      updated_at: "2026-09-12T12:30:00Z"
+    - id: prerequisites
+      parent_id: purpose
+      title: Prerequisites
+      level: 3
+      prompt: |
+        Generate the required prerequisites.
+      content: |
+        - Kubernetes cluster access
+        - kubectl
+        - Required permissions
+      depends_on:
+        - purpose
+      status: edited
+      history:
+        - version: 1
+          content: |
+            - kubectl
+          status: generated
+          description: initial generation
+          created_at: "2026-09-12T12:00:00Z"
+        - version: 2
+          content: |
+            - Kubernetes cluster access
+            - kubectl
+            - Required permissions
+          status: edited
+          description: human edit
+          created_at: "2026-09-12T12:30:00Z"
+      created_at: "2026-09-12T12:00:00Z"
+      updated_at: "2026-09-12T12:30:00Z"
+references:
+    - id: deploy-order
+      depends_on:
+        - prerequisites
+      description: Deploy only after prerequisites
