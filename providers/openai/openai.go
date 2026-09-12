@@ -59,6 +59,11 @@ func New(cfg Config) *Client {
 
 var _ provider.Provider = (*Client)(nil)
 
+// Name identifies the provider.
+func (c *Client) Name() string {
+	return "openai"
+}
+
 type chatMessage struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
@@ -230,7 +235,7 @@ func (c *Client) Models(ctx context.Context) ([]provider.Model, error) {
 	}
 	models := make([]provider.Model, 0, len(out.Data))
 	for _, m := range out.Data {
-		models = append(models, provider.Model{ID: m.ID, Name: m.ID, Provider: "openai"})
+		models = append(models, provider.Model{ID: m.ID, Name: m.ID, Provider: c.Name()})
 	}
 	return models, nil
 }

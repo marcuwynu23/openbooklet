@@ -53,6 +53,11 @@ func New(cfg Config) *Client {
 
 var _ provider.Provider = (*Client)(nil)
 
+// Name identifies the provider.
+func (c *Client) Name() string {
+	return "ollama"
+}
+
 type chatMessage struct {
 	Role    string `json:"role"`
 	Content string `json:"content"`
@@ -188,7 +193,7 @@ func (c *Client) Models(ctx context.Context) ([]provider.Model, error) {
 	}
 	models := make([]provider.Model, 0, len(out.Models))
 	for _, m := range out.Models {
-		models = append(models, provider.Model{ID: m.Name, Name: m.Name, Provider: "ollama"})
+		models = append(models, provider.Model{ID: m.Name, Name: m.Name, Provider: c.Name()})
 	}
 	return models, nil
 }

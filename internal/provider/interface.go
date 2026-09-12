@@ -51,6 +51,8 @@ type Response struct {
 // Provider defines the interface for LLM providers.
 // Application code depends on this abstraction, never on vendor-specific SDKs.
 type Provider interface {
+	// Name identifies the provider (for example "openai" or "ollama").
+	Name() string
 	Chat(ctx context.Context, req Request) (Response, error)
 	Stream(ctx context.Context, req Request) (<-chan Chunk, error)
 	Models(ctx context.Context) ([]Model, error)
