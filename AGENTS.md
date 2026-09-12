@@ -421,7 +421,7 @@ Build with the same care you would want in the runbook that gets woken up with a
 
 ### 13.1 Frontend stack and layout (`frontend/`)
 
-- **React 18 + TypeScript strict + Vite + Zustand + `marked`** for Markdown preview. No Next.js.
+- **React 18 + TypeScript strict + Vite + Zustand + `marked`** for Markdown preview. No Next.js. shadcn/ui migration proposed (issue #1); until it lands, hand-rolled CSS in `styles.css`.
 - **Structure:** `src/api.ts` (service layer — components never `fetch` directly), `src/stores.ts` (Zustand), `src/components/` (one concern per file), `src/markdown.ts` (shared renderer).
 - **Strictness:** `strict`, `noImplicitAny`, `noUncheckedIndexedAccess`, `noUnusedLocals`, `noUnusedParameters`. `npm run build` runs `tsc --noEmit` first; fix type errors, never loosen the config.
 - **UI vocabulary is "section"**, numbered `1. ## Title` in document order. The word "cell" must not appear in user-facing strings.

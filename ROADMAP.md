@@ -20,6 +20,7 @@ unchecked phases are upcoming work defined in [PLAN.md](PLAN.md).
   - [x] Per-section AI actions (Regenerate, Expand, Shorten, AI edit)
   - [x] Full-booklet Preview tab with Markdown header/footer blocks
   - [x] Markdown download + file import
+  - [ ] shadcn/ui component migration (proposal: issue #1; visual refactor only)
   - [x] Booklet rename, metadata editing, delete with confirmation
 
 ## Planned

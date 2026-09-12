@@ -1300,6 +1300,13 @@ TypeScript
 Vite
 ```
 
+Component system decision (see issue #1): all web components migrate to
+**shadcn/ui** primitives (Button, Dialog, Tabs, Select, Accordion, Sonner)
+with a single project theme — a pure visual refactor, no behavior change.
+Constraints: system font stack, no webfont/CDN dependencies (offline-first),
+icons via `lucide-react` (npm). Tailwind tooling must keep
+`make frontend-build` and self-hosted serving intact.
+
 Main UI:
 
 ```text
@@ -2668,6 +2675,7 @@ Phase 6 — AI Booklet Creation ....... internal/llm event streaming
                                        expand / shorten / edit with history
                                        snapshots — all inside the web UI
 Phase 7 — Web UI (working slice) .... React + TS strict + Vite + Zustand.
+                                       shadcn/ui migration proposed (issue #1).
                                        Sidebar (collapsible icon rail),
                                        numbered section cards with Edit/Preview
                                        tabs, inline title editing, accordion
