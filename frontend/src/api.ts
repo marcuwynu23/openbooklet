@@ -66,6 +66,18 @@ export const api = {
       body: JSON.stringify({ title, type: docType }),
     });
   },
+  renameBooklet(id: string, title: string): Promise<Booklet> {
+    return request(`/api/v1/booklets/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      body: JSON.stringify({ title }),
+    });
+  },
+  async deleteBooklet(id: string): Promise<void> {
+    const res = await fetch(`/api/v1/booklets/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    if (!res.ok) {
+      throw new Error(`delete failed: ${res.status}`);
+    }
+  },
   createSection(
     bookletId: string,
     req: { title: string; level: number; parentId?: string | null; prompt?: string; content?: string },
@@ -96,7 +108,7 @@ export const api = {
     );
   },
 
-  // generate streams tokens via onToken and resolves with the saved cells.
+  // generate streams tokens via onToken and resolves with the saved sections.
   async generate(
     bookletId: string,
     prompt: string,

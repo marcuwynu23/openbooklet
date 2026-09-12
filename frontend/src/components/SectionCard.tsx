@@ -27,7 +27,15 @@ function renderMarkdown(content: string): string {
 
 type Tab = 'preview' | 'edit';
 
-export function CellCard({ bookletId, section }: { bookletId: string; section: Section }) {
+export function SectionCard({
+  bookletId,
+  section,
+  index,
+}: {
+  bookletId: string;
+  section: Section;
+  index: number;
+}) {
   const refresh = useBookletStore((s) => s.refresh);
   const [tab, setTab] = useState<Tab>('preview');
   const [title, setTitle] = useState(section.title);
@@ -36,6 +44,7 @@ export function CellCard({ bookletId, section }: { bookletId: string; section: S
   const [aiBusy, setAiBusy] = useState<RegenerateMode | null>(null);
   const [instruction, setInstruction] = useState('');
   const [showEdit, setShowEdit] = useState(false);
+  const [titleEditing, setTitleEditing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -53,6 +62,26 @@ export function CellCard({ bookletId, section }: { bookletId: string; section: S
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'save failed');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function saveTitle(): Promise<void> {
+    const next = title.trim();
+    setTitleEditing(false);
+    if (next === '' || next === section.title) {
+      setTitle(section.title);
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      await api.updateSection(bookletId, section.id, { title: next });
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'save failed');
+      setTitle(section.title);
     } finally {
       setSaving(false);
     }
@@ -76,10 +105,44 @@ export function CellCard({ bookletId, section }: { bookletId: string; section: S
   }
 
   return (
-    <article className="cell">
-      <header className="cell-head">
-        <span className="cell-level">{'#'.repeat(Math.min(section.level, 6))}</span>
-        <h2>{section.title}</h2>
+    <article className="section">
+      <header className="section-head">
+        <span className="section-level">
+          {index}. {'#'.repeat(Math.min(section.level, 6))}
+        </span>
+        {titleEditing ? (
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onBlur={() => void saveTitle()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') void saveTitle();
+              if (e.key === 'Escape') {
+                setTitle(section.title);
+                setTitleEditing(false);
+              }
+            }}
+            aria-label="Section title"
+            className="section-title-input"
+            autoFocus
+          />
+        ) : (
+          <>
+            <h2>{section.title}</h2>
+            <button
+              type="button"
+              title="Rename section"
+              aria-label={`Rename section ${section.title}`}
+              className="icon-btn"
+              onClick={() => {
+                setTitle(section.title);
+                setTitleEditing(true);
+              }}
+            >
+              ✎
+            </button>
+          </>
+        )}
         <span className="badge" style={{ background: statusColor(section.status) }}>
           {section.status}
         </span>
@@ -118,22 +181,14 @@ export function CellCard({ bookletId, section }: { bookletId: string; section: S
           }}
         />
       ) : (
-        <>
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            aria-label="Section title"
-            className="title-input"
-          />
-          <textarea
-            className="editor"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            rows={Math.max(6, content.split('\n').length + 1)}
-          />
-        </>
+        <textarea
+          className="editor"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={Math.max(6, content.split('\n').length + 1)}
+        />
       )}
-      <footer className="cell-foot">
+      <footer className="section-foot">
         <button type="button" disabled={!dirty || saving} onClick={() => void save()}>
           {saving ? 'Saving…' : 'Save'}
         </button>
@@ -154,7 +209,7 @@ export function CellCard({ bookletId, section }: { bookletId: string; section: S
         {error !== null && <span className="error">{error}</span>}
       </footer>
       {showEdit && (
-        <div className="cell-foot">
+        <div className="section-foot">
           <input
             value={instruction}
             onChange={(e) => setInstruction(e.target.value)}

@@ -96,6 +96,8 @@ func buildMux(svc *booklet.Service, p provider.Provider, model string, cfg *conf
 	mux.HandleFunc("GET /api/v1/booklets", s.handleBooklets)
 	mux.HandleFunc("POST /api/v1/booklets", s.handleCreateBooklet)
 	mux.HandleFunc("GET /api/v1/booklets/{id}", s.handleBooklet)
+	mux.HandleFunc("PUT /api/v1/booklets/{id}", s.handleRenameBooklet)
+	mux.HandleFunc("DELETE /api/v1/booklets/{id}", s.handleDeleteBooklet)
 	mux.HandleFunc("PUT /api/v1/booklets/{id}/sections/{sectionID}", s.handleUpdateSection)
 	mux.HandleFunc("POST /api/v1/booklets/{id}/sections", s.handleCreateSection)
 	mux.HandleFunc("POST /api/v1/booklets/{id}/generate", s.handleGenerate)
@@ -271,6 +273,39 @@ func (s *apiServer) handleCreateBooklet(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	writeJSON(w, http.StatusCreated, map[string]any{"data": toBookletDTO(b)})
+}
+
+func (s *apiServer) handleRenameBooklet(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Title string `json:"title"`
+	}
+	if err := decodeBody(r, &req); err != nil {
+		writeError(w, http.StatusBadRequest, "bad_request", err.Error())
+		return
+	}
+	if strings.TrimSpace(req.Title) == "" {
+		writeError(w, http.StatusBadRequest, "bad_request", "title is required")
+		return
+	}
+	b, err := s.svc.GetBooklet(r.PathValue("id"))
+	if err != nil {
+		writeError(w, http.StatusNotFound, "not_found", "booklet not found")
+		return
+	}
+	b.Title = req.Title
+	if err := s.svc.UpdateBooklet(b); err != nil {
+		writeError(w, http.StatusBadRequest, "bad_request", err.Error())
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]any{"data": toBookletDTO(b)})
+}
+
+func (s *apiServer) handleDeleteBooklet(w http.ResponseWriter, r *http.Request) {
+	if err := s.svc.DeleteBooklet(r.PathValue("id")); err != nil {
+		writeError(w, http.StatusNotFound, "not_found", "booklet not found")
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func (s *apiServer) handleCreateSection(w http.ResponseWriter, r *http.Request) {

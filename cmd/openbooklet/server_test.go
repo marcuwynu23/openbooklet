@@ -190,6 +190,55 @@ func TestRegenerateEndpoint(t *testing.T) {
 	}
 }
 
+func TestRenameAndDeleteBookletEndpoints(t *testing.T) {
+	server, svc := testMux(t, &fakeProvider{})
+	if _, err := svc.CreateBooklet("b1", "Old", "sop", "", ""); err != nil {
+		t.Fatalf("CreateBooklet failed: %v", err)
+	}
+
+	req, _ := http.NewRequest(http.MethodPut, server.URL+"/api/v1/booklets/b1",
+		strings.NewReader(`{"title":"New"}`))
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("PUT booklet failed: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d, want 200", resp.StatusCode)
+	}
+	renamed, err := svc.GetBooklet("b1")
+	if err != nil {
+		t.Fatalf("GetBooklet failed: %v", err)
+	}
+	if renamed.Title != "New" {
+		t.Errorf("title = %q, want New", renamed.Title)
+	}
+
+	delReq, _ := http.NewRequest(http.MethodDelete, server.URL+"/api/v1/booklets/b1", nil)
+	delResp, err := http.DefaultClient.Do(delReq)
+	if err != nil {
+		t.Fatalf("DELETE booklet failed: %v", err)
+	}
+	defer delResp.Body.Close()
+	if delResp.StatusCode != http.StatusNoContent {
+		t.Errorf("status = %d, want 204", delResp.StatusCode)
+	}
+	if _, err := svc.GetBooklet("b1"); err == nil {
+		t.Error("booklet should be gone after delete")
+	}
+
+	delMissing, _ := http.NewRequest(http.MethodDelete, server.URL+"/api/v1/booklets/nope", nil)
+	missingResp, err := http.DefaultClient.Do(delMissing)
+	if err != nil {
+		t.Fatalf("DELETE booklet failed: %v", err)
+	}
+	defer missingResp.Body.Close()
+	if missingResp.StatusCode != http.StatusNotFound {
+		t.Errorf("status = %d, want 404", missingResp.StatusCode)
+	}
+}
+
 func TestCreateSectionEndpoint(t *testing.T) {
 	server, svc := testMux(t, &fakeProvider{})
 	if _, err := svc.CreateBooklet("b1", "Guide", "sop", "", ""); err != nil {

@@ -3,7 +3,7 @@ import { api } from '../api';
 import { useBookletStore } from '../stores';
 
 // GeneratePanel is the creation interface: describe the document in chat
-// style, watch the Markdown stream in, then work with the resulting cells.
+// style, watch the Markdown stream in, then work with the resulting sections.
 export function GeneratePanel({ bookletId }: { bookletId: string }) {
   const refresh = useBookletStore((s) => s.refresh);
   const [prompt, setPrompt] = useState('');
@@ -41,9 +41,9 @@ export function GeneratePanel({ bookletId }: { bookletId: string }) {
         rows={3}
         disabled={streaming}
       />
-      <div className="cell-foot">
+      <div className="section-foot">
         <button type="button" disabled={prompt.trim() === '' || streaming} onClick={() => void generate()}>
-          {streaming ? 'Generating…' : 'Generate cells'}
+          {streaming ? 'Generating…' : 'Generate sections'}
         </button>
         {error !== null && <span className="error">{error}</span>}
       </div>

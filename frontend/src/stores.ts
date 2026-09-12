@@ -10,6 +10,8 @@ interface BookletState {
   loadBooklets: () => Promise<void>;
   select: (id: string) => Promise<void>;
   create: (title: string, docType: string) => Promise<void>;
+  rename: (title: string) => Promise<void>;
+  remove: () => Promise<void>;
   refresh: () => Promise<void>;
 }
 
@@ -63,6 +65,32 @@ export const useBookletStore = create<BookletState>()((set, get) => ({
     await get().loadBooklets();
     if (selectedId !== null) {
       await get().select(selectedId);
+    }
+  },
+
+  async rename(title: string) {
+    const { booklet } = get();
+    if (booklet === null) return;
+    set({ loading: true, error: null });
+    try {
+      const updated = await api.renameBooklet(booklet.id, title);
+      const booklets = await api.booklets();
+      set({ booklet: updated, booklets, loading: false });
+    } catch (err) {
+      set({ loading: false, error: err instanceof Error ? err.message : 'rename failed' });
+    }
+  },
+
+  async remove() {
+    const { booklet } = get();
+    if (booklet === null) return;
+    set({ loading: true, error: null });
+    try {
+      await api.deleteBooklet(booklet.id);
+      set({ booklet: null, selectedId: null, loading: false });
+      await get().loadBooklets();
+    } catch (err) {
+      set({ loading: false, error: err instanceof Error ? err.message : 'delete failed' });
     }
   },
 }));

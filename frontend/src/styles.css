@@ -73,8 +73,8 @@ body {
 
 .main {
   flex: 1;
-  max-width: 860px;
-  padding: 24px;
+  min-width: 0;
+  padding: 24px 32px;
 }
 
 .booklet-head {
@@ -82,7 +82,64 @@ body {
 }
 
 .booklet-head h1 {
-  margin: 0 0 4px;
+  margin: 0;
+}
+
+.booklet-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.booklet-title-input {
+  font-size: 24px;
+  font-weight: 700;
+  border: 1px solid #0969da;
+  border-radius: 6px;
+  padding: 4px 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #57606a;
+  font-size: 16px;
+  padding: 4px;
+}
+
+.icon-btn:hover {
+  color: #1f2328;
+}
+
+.danger-btn {
+  padding: 6px 12px;
+  border: 1px solid #cf222e;
+  border-radius: 6px;
+  background: transparent;
+  color: #cf222e;
+  cursor: pointer;
+}
+
+.danger-btn:hover {
+  background: #cf222e;
+  color: #fff;
+}
+
+.section-title-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 600;
+  border: 1px solid #0969da;
+  border-radius: 6px;
+  padding: 2px 6px;
 }
 
 .muted {
@@ -93,7 +150,7 @@ body {
   color: #cf222e;
 }
 
-.cell {
+.section {
   background: #fff;
   border: 1px solid #d0d7de;
   border-radius: 8px;
@@ -101,19 +158,19 @@ body {
   margin-bottom: 16px;
 }
 
-.cell-head {
+.section-head {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.cell-head h2 {
+.section-head h2 {
   margin: 0;
   font-size: 18px;
   flex: 1;
 }
 
-.cell-level {
+.section-level {
   color: #57606a;
   font-family: monospace;
 }
@@ -152,14 +209,14 @@ body {
   margin-top: 8px;
 }
 
-.cell-foot {
+.section-foot {
   display: flex;
   gap: 8px;
   align-items: center;
   margin-top: 12px;
 }
 
-.cell-foot button {
+.section-foot button {
   padding: 6px 12px;
   border: 1px solid #d0d7de;
   border-radius: 6px;
@@ -167,7 +224,7 @@ body {
   cursor: pointer;
 }
 
-.cell-foot button:disabled {
+.section-foot button:disabled {
   opacity: 0.5;
   cursor: default;
 }
@@ -286,18 +343,7 @@ body {
   color: #57606a;
 }
 
-.title-input {
-  width: 100%;
-  box-sizing: border-box;
-  font-size: 16px;
-  font-weight: 600;
-  border: 1px solid #0969da;
-  border-radius: 6px;
-  padding: 8px;
-  margin-top: 8px;
-}
-
-.add-cell {
+.add-section {
   width: 100%;
   padding: 10px;
   border: 1px dashed #0969da;
@@ -308,7 +354,7 @@ body {
   font-size: 14px;
 }
 
-.add-cell:hover {
+.add-section:hover {
   background: #ddf4ff;
 }
 

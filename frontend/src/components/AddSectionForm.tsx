@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { api, type Section } from '../api';
 import { useBookletStore } from '../stores';
 
-// AddCellForm appends a manually written cell. The level defaults to the
-// previous cell's level; nesting picks the nearest preceding lower-level
-// cell as parent.
-export function AddCellForm({ bookletId, sections }: { bookletId: string; sections: Section[] }) {
+// AddSectionForm appends a manually written section. The level defaults to
+// the previous section's level; nesting picks the nearest preceding
+// lower-level section as parent.
+export function AddSectionForm({ bookletId, sections }: { bookletId: string; sections: Section[] }) {
   const refresh = useBookletStore((s) => s.refresh);
   const lastLevel = sections.length > 0 ? (sections[sections.length - 1]?.level ?? 2) : 2;
   const [open, setOpen] = useState(false);
@@ -49,20 +49,20 @@ export function AddCellForm({ bookletId, sections }: { bookletId: string; sectio
 
   if (!open) {
     return (
-      <button type="button" className="add-cell" onClick={() => setOpen(true)}>
-        ＋ Add cell
+      <button type="button" className="add-section" onClick={() => setOpen(true)}>
+        ＋ Add section
       </button>
     );
   }
 
   return (
-    <form className="cell add-form" onSubmit={(e) => void submit(e)}>
-      <div className="cell-foot">
+    <form className="section add-form" onSubmit={(e) => void submit(e)}>
+      <div className="section-foot">
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Cell title…"
-          aria-label="New cell title"
+          placeholder="Section title…"
+          aria-label="New section title"
           className="ai-input"
           autoFocus
         />
