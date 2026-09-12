@@ -216,6 +216,45 @@ func TestSQLiteFullRoundTrip(t *testing.T) {
 	}
 }
 
+// TestSQLitePreservesSectionOrder pins document order: titles are chosen so
+// ID sorting differs from file layout, and reads must follow layout.
+func TestSQLitePreservesSectionOrder(t *testing.T) {
+	s, err := NewSQLiteStorage(":memory:")
+	if err != nil {
+		t.Fatalf("NewSQLiteStorage failed: %v", err)
+	}
+	defer s.Close()
+
+	repo := NewRepository(s.DB())
+	now := time.Now()
+	b := &booklet.Booklet{
+		ID:     "b1",
+		Title:  "Ordered",
+		Status: booklet.BookletStatusDraft,
+		Sections: []booklet.Section{
+			{ID: "zebra", Title: "Zebra", Level: 1, Position: 0, Status: section.SectionStatusDraft, CreatedAt: now, UpdatedAt: now},
+			{ID: "mango", Title: "Mango", Level: 1, Position: 1, Status: section.SectionStatusDraft, CreatedAt: now, UpdatedAt: now},
+			{ID: "apple", Title: "Apple", Level: 1, Position: 2, Status: section.SectionStatusDraft, CreatedAt: now, UpdatedAt: now},
+		},
+	}
+	b.CreatedAt = now
+	b.UpdatedAt = now
+	if err := repo.SaveBooklet(b); err != nil {
+		t.Fatalf("SaveBooklet failed: %v", err)
+	}
+
+	got, err := repo.GetBooklet("b1")
+	if err != nil {
+		t.Fatalf("GetBooklet failed: %v", err)
+	}
+	want := []string{"Zebra", "Mango", "Apple"}
+	for i, title := range want {
+		if got.Sections[i].Title != title {
+			t.Fatalf("section %d = %q, want %q (file order)", i, got.Sections[i].Title, title)
+		}
+	}
+}
+
 // TestSQLiteFileBackedListBooklets mirrors production: a real database file
 // (like data/openbooklet.db) must save and list booklets. This guards the
 // file-backed migration path that :memory: tests never exercise.

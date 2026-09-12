@@ -459,6 +459,43 @@ func TestImportMarkdownHeadingless(t *testing.T) {
 	}
 }
 
+// TestImportMarkdownPreservesFileOrder pins the reported bug: sections must
+// come back in file layout order, not sorted by ID. Titles are chosen so
+// alphabetical order differs from document order.
+func TestImportMarkdownPreservesFileOrder(t *testing.T) {
+	repo := NewInMemoryBookletRepository()
+	svc := NewService(repo)
+	svc.CreateBooklet("b1", "Test", "sop", "", "") //nolint:errcheck
+
+	input := "# Zebra\n\nStripes.\n\n# Mango\n\nFruit.\n\n# Apple\n\nCrunch.\n"
+	sections, err := svc.ImportMarkdown("b1", "order.md", input)
+	if err != nil {
+		t.Fatalf("ImportMarkdown failed: %v", err)
+	}
+	want := []string{"Zebra", "Mango", "Apple"}
+	if len(sections) != len(want) {
+		t.Fatalf("got %d sections, want %d", len(sections), len(want))
+	}
+	for i, title := range want {
+		if sections[i].Title != title {
+			t.Fatalf("section %d = %q, want %q (file order)", i, sections[i].Title, title)
+		}
+		if sections[i].Position != i {
+			t.Errorf("section %q position = %d, want %d", title, sections[i].Position, i)
+		}
+	}
+
+	stored, err := repo.GetBooklet("b1")
+	if err != nil {
+		t.Fatalf("GetBooklet failed: %v", err)
+	}
+	for i, title := range want {
+		if stored.Sections[i].Title != title {
+			t.Fatalf("stored section %d = %q, want %q (file order)", i, stored.Sections[i].Title, title)
+		}
+	}
+}
+
 func TestExportMarkdown(t *testing.T) {
 	out, err := ExportMarkdown([]Section{
 		{ID: "a", Title: "Title", Level: 1, Content: "Intro.\n"},

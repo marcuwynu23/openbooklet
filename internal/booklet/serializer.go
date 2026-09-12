@@ -81,6 +81,7 @@ type obkSection struct {
 	ParentID     *string        `yaml:"parent_id,omitempty"`
 	Title        string         `yaml:"title"`
 	Level        int            `yaml:"level"`
+	Position     int            `yaml:"position"`
 	Prompt       string         `yaml:"prompt,omitempty"`
 	Content      string         `yaml:"content,omitempty"`
 	Dependencies []string       `yaml:"depends_on,omitempty"`
@@ -159,6 +160,7 @@ func newOBKSections(sections []Section) []obkSection {
 			ParentID:     s.ParentID,
 			Title:        s.Title,
 			Level:        s.Level,
+			Position:     s.Position,
 			Prompt:       s.Prompt,
 			Content:      s.Content,
 			Dependencies: s.Dependencies,
@@ -300,6 +302,7 @@ func obkSectionsToModel(sections []obkSection) ([]Section, error) {
 			ParentID:     s.ParentID,
 			Title:        s.Title,
 			Level:        s.Level,
+			Position:     s.Position,
 			Prompt:       s.Prompt,
 			Content:      s.Content,
 			Dependencies: s.Dependencies,

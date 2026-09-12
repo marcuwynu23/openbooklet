@@ -23,6 +23,7 @@ sections:
     - id: purpose
       title: Purpose
       level: 2
+      position: 0
       prompt: |
         Explain the purpose of this SOP.
       content: |
@@ -56,6 +57,7 @@ sections:
       parent_id: purpose
       title: Prerequisites
       level: 3
+      position: 1
       prompt: |
         Generate the required prerequisites.
       content: |

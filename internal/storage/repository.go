@@ -54,6 +54,8 @@ func (r *Repository) SaveBooklet(b *booklet.Booklet) error {
 		return fmt.Errorf("deleting old sections: %w", err)
 	}
 	for i := range b.Sections {
+		// Persist document order: positions always mirror slice order.
+		b.Sections[i].Position = i
 		if err := r.saveSection(b.ID, &b.Sections[i]); err != nil {
 			return err
 		}
@@ -118,7 +120,7 @@ func (r *Repository) GetBooklet(id string) (*booklet.Booklet, error) {
 // getSections loads all sections for a booklet.
 func (r *Repository) getSections(bookletID string) ([]booklet.Section, error) {
 	var models []sectionModel
-	if err := r.db.Where("booklet_id = ?", bookletID).Order("id").Find(&models).Error; err != nil {
+	if err := r.db.Where("booklet_id = ?", bookletID).Order("position, id").Find(&models).Error; err != nil {
 		return nil, fmt.Errorf("querying sections: %w", err)
 	}
 

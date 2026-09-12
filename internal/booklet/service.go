@@ -78,11 +78,17 @@ func (s *Service) UpdateBooklet(booklet *Booklet) error {
 	return s.repo.SaveBooklet(booklet)
 }
 
-// AddSection adds a section to a booklet.
+// AddSection adds a section to a booklet, appending it at the end of the
+// document order.
 func (s *Service) AddSection(bookletID string, sec *Section) error {
 	if err := sec.Validate(); err != nil {
 		return err
 	}
+	b, err := s.repo.GetBooklet(bookletID)
+	if err != nil {
+		return err
+	}
+	sec.Position = len(b.Sections)
 	return s.repo.SaveSection(bookletID, sec)
 }
 

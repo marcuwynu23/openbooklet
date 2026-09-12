@@ -88,6 +88,7 @@ func ParseMarkdown(input string) (*ParsedMarkdown, error) {
 					sec.ParentID = &parentID
 				}
 				stack = append(stack, sec)
+				sec.Position = len(doc.Sections)
 				doc.Sections = append(doc.Sections, *sec)
 				current = &doc.Sections[len(doc.Sections)-1]
 				continue

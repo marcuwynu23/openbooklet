@@ -92,6 +92,26 @@ func migrationList() []Migration {
 				return db.Exec(`UPDATE sections SET generation_context_refs = '' WHERE generation_context_refs IS NULL`).Error
 			},
 		},
+		{
+			Version: 4,
+			Name:    "add_section_position",
+			Up: func(db *gorm.DB) error {
+				if !db.Migrator().HasColumn(&sectionModel{}, "position") {
+					if err := db.Migrator().AddColumn(&sectionModel{}, "Position"); err != nil {
+						return err
+					}
+				}
+				// Preserve insertion order as document order for existing rows.
+				// Only SQLite can hold legacy data; fresh tables never contain NULLs.
+				if string(db.Dialector.Name()) != string(DriverSQLite) {
+					return nil
+				}
+				return db.Exec(`UPDATE sections SET position = (
+					SELECT COUNT(*) FROM sections AS s2
+					WHERE s2.booklet_id = sections.booklet_id AND s2.rowid <= sections.rowid
+				) - 1 WHERE position IS NULL`).Error
+			},
+		},
 	}
 }
 

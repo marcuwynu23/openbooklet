@@ -70,6 +70,9 @@ func TestParseMarkdownHierarchy(t *testing.T) {
 	byTitle := make(map[string]*Section)
 	for i := range doc.Sections {
 		byTitle[doc.Sections[i].Title] = &doc.Sections[i]
+		if doc.Sections[i].Position != i {
+			t.Errorf("section %q position = %d, want document order %d", doc.Sections[i].Title, doc.Sections[i].Position, i)
+		}
 	}
 	for _, want := range wantTitles {
 		sec, ok := byTitle[want.title]

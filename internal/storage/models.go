@@ -38,6 +38,7 @@ type sectionModel struct {
 	ParentID            string   `gorm:"column:parent_id"`
 	Title               string   `gorm:"column:title;not null"`
 	Level               int      `gorm:"column:level;not null"`
+	Position            int      `gorm:"column:position"`
 	Prompt              string   `gorm:"column:prompt"`
 	Content             string   `gorm:"column:content"`
 	Dependencies        string   `gorm:"column:dependencies"`
@@ -132,6 +133,7 @@ func sectionToDomain(m *sectionModel) *booklet.Section {
 		ParentID:     parentID,
 		Title:        m.Title,
 		Level:        m.Level,
+		Position:     m.Position,
 		Prompt:       m.Prompt,
 		Content:      m.Content,
 		Dependencies: parseJSONArray(m.Dependencies),
@@ -165,6 +167,7 @@ func sectionToModel(bookletID string, sec *booklet.Section, createdAt, updatedAt
 		ParentID:     parentID,
 		Title:        sec.Title,
 		Level:        sec.Level,
+		Position:     sec.Position,
 		Prompt:       sec.Prompt,
 		Content:      sec.Content,
 		Dependencies: joinStrings(sec.Dependencies),

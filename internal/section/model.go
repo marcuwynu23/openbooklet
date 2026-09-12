@@ -80,8 +80,11 @@ type Section struct {
 	Status       SectionStatus
 	Generation   *GenerationMetadata
 	History      []ContentVersion
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	// Position is the zero-based document order. The parser assigns it;
+	// repositories persist it and return sections ordered by it.
+	Position  int
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 // Validate checks the section for structural validity.
