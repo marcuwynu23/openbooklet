@@ -198,6 +198,16 @@ body {
 .section-level {
   color: #57606a;
   font-family: monospace;
+  white-space: nowrap;
+}
+
+.level-select {
+  padding: 2px 4px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  background: #fff;
+  color: #57606a;
+  font-size: 12px;
 }
 
 .badge {

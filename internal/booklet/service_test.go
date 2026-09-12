@@ -346,7 +346,7 @@ func TestServiceUpdateSection(t *testing.T) {
 	svc.AddSection("b1", &Section{ID: "s1", Title: "Original", Level: 2, Status: section.SectionStatusGenerated}) //nolint:errcheck
 
 	newContent := "Edited content."
-	updated, err := svc.UpdateSection("b1", "s1", nil, nil, &newContent)
+	updated, err := svc.UpdateSection("b1", "s1", nil, nil, &newContent, nil)
 	if err != nil {
 		t.Fatalf("UpdateSection failed: %v", err)
 	}
@@ -361,11 +361,42 @@ func TestServiceUpdateSection(t *testing.T) {
 	}
 
 	empty := ""
-	if _, err := svc.UpdateSection("b1", "s1", &empty, nil, nil); err == nil {
+	if _, err := svc.UpdateSection("b1", "s1", &empty, nil, nil, nil); err == nil {
 		t.Error("empty title should fail validation")
 	}
-	if _, err := svc.UpdateSection("b1", "missing", nil, nil, &newContent); err == nil {
+	if _, err := svc.UpdateSection("b1", "missing", nil, nil, &newContent, nil); err == nil {
 		t.Error("missing section should return an error")
+	}
+}
+
+func TestServiceUpdateSectionLevel(t *testing.T) {
+	repo := NewInMemoryBookletRepository()
+	svc := NewService(repo)
+	svc.CreateBooklet("b1", "Test", "sop", "", "")                                                                                 //nolint:errcheck
+	svc.AddSection("b1", &Section{ID: "s1", Title: "Parent", Level: 1, Status: section.SectionStatusDraft})                        //nolint:errcheck
+	svc.AddSection("b1", &Section{ID: "s2", Title: "Child", Level: 2, ParentID: strPtr("s1"), Status: section.SectionStatusDraft}) //nolint:errcheck
+
+	deeper := 3
+	moved, err := svc.UpdateSection("b1", "s2", nil, nil, nil, &deeper)
+	if err != nil {
+		t.Fatalf("UpdateSection level failed: %v", err)
+	}
+	if moved.Level != 3 || moved.ParentID == nil || *moved.ParentID != "s1" {
+		t.Errorf("section = %+v, want level 3 still under s1", moved)
+	}
+
+	top := 1
+	detached, err := svc.UpdateSection("b1", "s2", nil, nil, nil, &top)
+	if err != nil {
+		t.Fatalf("UpdateSection level failed: %v", err)
+	}
+	if detached.Level != 1 || detached.ParentID != nil {
+		t.Errorf("section = %+v, want level 1 with no parent", detached)
+	}
+
+	bad := 9
+	if _, err := svc.UpdateSection("b1", "s2", nil, nil, nil, &bad); err == nil {
+		t.Error("level 9 should fail validation")
 	}
 }
 

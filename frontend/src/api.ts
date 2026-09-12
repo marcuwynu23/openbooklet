@@ -128,12 +128,21 @@ export const api = {
   updateSection(
     bookletId: string,
     sectionId: string,
-    patch: { title?: string; prompt?: string; content?: string },
+    patch: { title?: string; prompt?: string; content?: string; level?: number },
   ): Promise<Section> {
     return request(
       `/api/v1/booklets/${encodeURIComponent(bookletId)}/sections/${encodeURIComponent(sectionId)}`,
       { method: 'PUT', body: JSON.stringify(patch) },
     );
+  },
+  async deleteSection(bookletId: string, sectionId: string): Promise<void> {
+    const res = await fetch(
+      `/api/v1/booklets/${encodeURIComponent(bookletId)}/sections/${encodeURIComponent(sectionId)}`,
+      { method: 'DELETE' },
+    );
+    if (!res.ok) {
+      throw new Error(`delete failed: ${res.status}`);
+    }
   },
   regenerateSection(
     bookletId: string,

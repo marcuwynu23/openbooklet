@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react';
-import { api } from '../api';
-import { useBookletStore } from '../stores';
+import { useRef, useState } from "react";
+import { api } from "../api";
+import { useBookletStore } from "../stores";
 
 // TransferButtons downloads the booklet as Markdown or imports a Markdown
 // file as new sections.
@@ -16,7 +16,7 @@ export function TransferButtons({ bookletId }: { bookletId: string }) {
     try {
       const { blob, filename } = await api.exportBooklet(bookletId);
       const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
       link.download = filename;
       document.body.appendChild(link);
@@ -24,7 +24,7 @@ export function TransferButtons({ bookletId }: { bookletId: string }) {
       link.remove();
       URL.revokeObjectURL(url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'export failed');
+      setError(err instanceof Error ? err.message : "export failed");
     } finally {
       setBusy(false);
     }
@@ -37,11 +37,11 @@ export function TransferButtons({ bookletId }: { bookletId: string }) {
       await api.importMarkdown(bookletId, file);
       await refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'import failed');
+      setError(err instanceof Error ? err.message : "import failed");
     } finally {
       setBusy(false);
       if (fileRef.current !== null) {
-        fileRef.current.value = '';
+        fileRef.current.value = "";
       }
     }
   }
@@ -49,10 +49,10 @@ export function TransferButtons({ bookletId }: { bookletId: string }) {
   return (
     <div className="transfer-row">
       <button type="button" disabled={busy} onClick={() => void exportFile()}>
-        Export .md
+        Export
       </button>
       <button type="button" disabled={busy} onClick={() => fileRef.current?.click()}>
-        Import .md
+        Import
       </button>
       <input
         ref={fileRef}

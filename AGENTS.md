@@ -430,10 +430,17 @@ Build with the same care you would want in the runbook that gets woken up with a
 - The Go server serves `frontend/dist` with an SPA fallback to `index.html`. `frontend/dist/` and `node_modules/` are gitignored; CI/dev must run `make frontend-build` before `make run`.
 
 ### 13.2 HTTP API conventions (`cmd/openbooklet/server.go`)
-
 - Handlers live on `apiServer` (built by `buildMux`, which tests reuse with fakes). This is the placeholder for a future `internal/api` package — keep handlers thin, services smart.
 - **Envelope:** success is `{ "data": T }`, errors are `{ "error": { "code", "message" } }` with proper status codes (400 validation, 404 missing, 503 no provider, 502 generation failed).
 - **DTOs** (`bookletDTO`, `sectionDTO`) carry JSON tags; domain structs stay serialization-free. `parentId` is `null` when top-level; times are RFC3339 strings.
 - **SSE generation endpoint** emits `start → token* → complete | error` with `data:` JSON payloads. The `complete` event fires only after cells are parsed and saved.
 - **AI-optional is load-bearing:** an empty provider name means `provider == nil`; every AI route must answer `503 no_provider`, never 500.
 - Multipart imports cap uploads at 4 MiB (`ParseMultipartForm` + `LimitReader`).
+
+### 13.3 Storage conventions (`internal/storage/`)
+
+- **GORM, not raw SQL.** Dialects: SQLite default (pure-Go `glebarez/sqlite`, no CGO), plus Postgres/MySQL via `OPENBOOKLET_DB_DRIVER`. Never import `modernc.org/sqlite` directly — it registers the same `"sqlite"` driver name as glebarez and panics on duplicate registration.
+- **Models mirror legacy tables exactly** (`models.go`, explicit `column:` tags + `TableName`). Timestamps stay RFC3339 strings; string lists stay quoted-CSV; `show_footer` stays integer. Do not "improve" column types without a migration.
+- **Migrations are versioned and append-only** (`migrate.go`, tracked in `schema_migrations`). v1 creates tables only when missing; later versions alter explicitly. **Never run schema auto-diff against existing databases** — GORM rebuilds tables on definition drift and can fail on legacy rows.
+- **Backfill after every ADD COLUMN.** New nullable columns strand old rows as `NULL`, which Go cannot scan into strings — this exact bug once broke all listing. Every column-adding migration must include `UPDATE ... SET ... WHERE ... IS NULL`.
+- **Behavior parity is tested:** file-backed listing, old-schema upgrade, NULL backfill, migration idempotency (`sqlite_test.go`). Any storage change must extend these, not just `:memory:` tests.

@@ -79,4 +79,63 @@ describe('SectionCard', () => {
     expect(put).toBeDefined();
     expect(String(put?.init?.body)).toContain('"title":"Goal"');
   });
+
+  it('changes the heading level through the API', async () => {
+    const user = userEvent.setup();
+    const booklet = makeBooklet();
+    const calls = mockFetch((url, init) => {
+      const base = bookletRoutes(booklet)(url, init);
+      if (base !== undefined) return base;
+      if (url === '/api/v1/booklets/b1/sections/s1' && init?.method === 'PUT') {
+        return { status: 200, body: { data: makeSection({ level: 3 }) } };
+      }
+      return undefined;
+    });
+
+    render(<SectionCard bookletId="b1" section={makeSection()} index={1} />);
+    await user.selectOptions(screen.getByLabelText('Heading level for section Purpose'), '3');
+
+    const put = calls.find((c) => c.init?.method === 'PUT');
+    expect(put).toBeDefined();
+    expect(String(put?.init?.body)).toContain('"level":3');
+  });
+
+  it('deletes the section after confirmation', async () => {
+    const user = userEvent.setup();
+    const booklet = makeBooklet();
+    const calls = mockFetch((url, init) => {
+      const base = bookletRoutes(booklet)(url, init);
+      if (base !== undefined) return base;
+      if (url === '/api/v1/booklets/b1/sections/s1' && init?.method === 'DELETE') {
+        return { status: 204, body: null };
+      }
+      return undefined;
+    });
+    const realConfirm = window.confirm;
+    window.confirm = () => true;
+    try {
+      render(<SectionCard bookletId="b1" section={makeSection()} index={1} />);
+      await user.click(screen.getByRole('button', { name: 'Delete' }));
+    } finally {
+      window.confirm = realConfirm;
+    }
+
+    expect(calls.some((c) => c.init?.method === 'DELETE')).toBe(true);
+  });
+
+  it('keeps the section when deletion is cancelled', async () => {
+    const user = userEvent.setup();
+    const booklet = makeBooklet();
+    const calls = mockFetch(bookletRoutes(booklet));
+    const realConfirm = window.confirm;
+    window.confirm = () => false;
+    try {
+      render(<SectionCard bookletId="b1" section={makeSection()} index={1} />);
+      await user.click(screen.getByRole('button', { name: 'Delete' }));
+    } finally {
+      window.confirm = realConfirm;
+    }
+
+    expect(calls.some((c) => c.init?.method === 'DELETE')).toBe(false);
+  });
 });

@@ -1,146 +1,53 @@
 package storage
 
 import (
-	"database/sql"
 	"fmt"
-	"strings"
 
-	_ "modernc.org/sqlite" // SQLite driver
+	"gorm.io/gorm"
 )
 
 // Storage holds the database connection and provides access to repositories.
 type Storage struct {
-	db *sql.DB
+	db     *gorm.DB
+	driver Driver
 }
 
-// NewSQLiteStorage creates a new SQLite-backed storage.
+// OpenStorage connects to the given backend and runs migrations.
+func OpenStorage(driver Driver, dataSourceName string) (*Storage, error) {
+	db, err := Open(driver, dataSourceName)
+	if err != nil {
+		return nil, err
+	}
+	if err := Migrate(db); err != nil {
+		if sqlDB, sqlErr := db.DB(); sqlErr == nil {
+			sqlDB.Close()
+		}
+		return nil, err
+	}
+	return &Storage{db: db, driver: driver}, nil
+}
+
+// NewSQLiteStorage creates a SQLite-backed storage.
 // The dataSourceName can be a file path or ":memory:" for an in-memory database.
 func NewSQLiteStorage(dataSourceName string) (*Storage, error) {
-	db, err := sql.Open("sqlite", dataSourceName)
-	if err != nil {
-		return nil, fmt.Errorf("opening sqlite: %w", err)
-	}
-	if err := db.Ping(); err != nil {
-		return nil, fmt.Errorf("pinging sqlite: %w", err)
-	}
-
-	s := &Storage{db: db}
-	if err := s.runMigrations(); err != nil {
-		db.Close()
-		return nil, fmt.Errorf("running migrations: %w", err)
-	}
-
-	return s, nil
+	return OpenStorage(DriverSQLite, dataSourceName)
 }
 
 // DB returns the underlying database connection.
-func (s *Storage) DB() *sql.DB {
+func (s *Storage) DB() *gorm.DB {
 	return s.db
+}
+
+// DriverName reports which backend this storage uses.
+func (s *Storage) DriverName() string {
+	return string(s.driver)
 }
 
 // Close closes the database connection.
 func (s *Storage) Close() error {
-	return s.db.Close()
-}
-
-// runMigrations creates all required tables.
-func (s *Storage) runMigrations() error {
-	migrations := []string{
-		`CREATE TABLE IF NOT EXISTS booklets (
-			id TEXT PRIMARY KEY,
-			title TEXT NOT NULL,
-			type TEXT,
-			version TEXT,
-			status TEXT NOT NULL DEFAULT 'draft',
-			audience TEXT,
-			instructions TEXT,
-			template TEXT,
-			header TEXT NOT NULL DEFAULT '',
-			footer TEXT NOT NULL DEFAULT '',
-			show_footer INTEGER NOT NULL DEFAULT 0,
-			created_at TEXT NOT NULL,
-			updated_at TEXT NOT NULL
-		)`,
-		`CREATE TABLE IF NOT EXISTS sections (
-			id TEXT NOT NULL,
-			booklet_id TEXT NOT NULL,
-			parent_id TEXT,
-			title TEXT NOT NULL,
-			level INTEGER NOT NULL,
-			prompt TEXT,
-			content TEXT,
-			dependencies TEXT,
-			context_refs TEXT,
-			status TEXT NOT NULL DEFAULT 'draft',
-			provider TEXT,
-			model TEXT,
-			prompt_snapshot TEXT,
-			temperature REAL,
-			max_tokens INTEGER,
-			input_tokens INTEGER DEFAULT 0,
-			output_tokens INTEGER DEFAULT 0,
-			duration_ms INTEGER DEFAULT 0,
-			created_at TEXT NOT NULL,
-			updated_at TEXT NOT NULL,
-			PRIMARY KEY (id, booklet_id)
-		)`,
-		`CREATE TABLE IF NOT EXISTS content_versions (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-			section_id TEXT NOT NULL,
-			booklet_id TEXT NOT NULL,
-			version INTEGER NOT NULL,
-			content TEXT NOT NULL,
-			status TEXT NOT NULL,
-			description TEXT,
-			created_at TEXT NOT NULL
-		)`,
-		`CREATE TABLE IF NOT EXISTS booklet_references (
-			id TEXT PRIMARY KEY,
-			booklet_id TEXT NOT NULL,
-			depends_on TEXT,
-			description TEXT
-		)`,
-		`CREATE INDEX IF NOT EXISTS idx_booklet_references_id ON booklet_references(id)`,
-		`CREATE INDEX IF NOT EXISTS idx_booklet_references_booklet_id ON booklet_references(booklet_id)`,
-		`CREATE INDEX IF NOT EXISTS idx_sections_booklet_id ON sections(booklet_id)`,
-		`CREATE INDEX IF NOT EXISTS idx_content_versions_section_id ON content_versions(section_id, booklet_id)`,
+	sqlDB, err := s.db.DB()
+	if err != nil {
+		return fmt.Errorf("resolving connection: %w", err)
 	}
-
-	for _, m := range migrations {
-		if _, err := s.db.Exec(m); err != nil {
-			return fmt.Errorf("migration failed: %w", err)
-		}
-	}
-
-	// Column additions for databases created before the column existed.
-	// NOT NULL DEFAULT backfills existing rows so scans never see NULL.
-	// Duplicate-column errors mean the migration already ran.
-	alters := []string{
-		`ALTER TABLE booklets ADD COLUMN header TEXT NOT NULL DEFAULT ''`,
-		`ALTER TABLE booklets ADD COLUMN footer TEXT NOT NULL DEFAULT ''`,
-		`ALTER TABLE booklets ADD COLUMN show_footer INTEGER NOT NULL DEFAULT 0`,
-	}
-	for _, m := range alters {
-		if _, err := s.db.Exec(m); err != nil {
-			if strings.Contains(err.Error(), "duplicate column name") {
-				continue
-			}
-			return fmt.Errorf("migration failed: %w", err)
-		}
-	}
-
-	// Backfill NULLs left by earlier nullable migrations so scans never
-	// see NULL. Idempotent on every database.
-	backfills := []string{
-		`UPDATE booklets SET header = '' WHERE header IS NULL`,
-		`UPDATE booklets SET footer = '' WHERE footer IS NULL`,
-		`UPDATE booklets SET show_footer = 0 WHERE show_footer IS NULL`,
-	}
-	for _, m := range backfills {
-		if _, err := s.db.Exec(m); err != nil {
-			return fmt.Errorf("migration failed: %w", err)
-		}
-	}
-
-	return nil
+	return sqlDB.Close()
 }

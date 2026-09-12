@@ -9,7 +9,7 @@ import (
 	"github.com/openbooklet/openbooklet/internal/booklet"
 	"github.com/openbooklet/openbooklet/internal/section"
 
-	_ "modernc.org/sqlite"
+	_ "github.com/glebarez/sqlite"
 )
 
 func TestSQLiteSaveAndGetBooklet(t *testing.T) {
@@ -19,7 +19,7 @@ func TestSQLiteSaveAndGetBooklet(t *testing.T) {
 	}
 	defer s.Close()
 
-	repo := NewSQLiteBookletRepository(s.DB())
+	repo := NewRepository(s.DB())
 	b := &booklet.Booklet{
 		ID:     "b1",
 		Title:  "Test",
@@ -52,7 +52,7 @@ func TestSQLiteGetNotFound(t *testing.T) {
 	}
 	defer s.Close()
 
-	repo := NewSQLiteBookletRepository(s.DB())
+	repo := NewRepository(s.DB())
 	_, err = repo.GetBooklet("nonexistent")
 	if err == nil {
 		t.Fatal("GetBooklet should return error for missing booklet")
@@ -66,7 +66,7 @@ func TestSQLiteSaveAndGetSection(t *testing.T) {
 	}
 	defer s.Close()
 
-	repo := NewSQLiteBookletRepository(s.DB())
+	repo := NewRepository(s.DB())
 	repo.SaveBooklet(&booklet.Booklet{ID: "b1", Title: "Test", Status: booklet.BookletStatusDraft})
 
 	sec := &booklet.Section{
@@ -97,7 +97,7 @@ func TestSQLiteSaveAndGetAllBooklets(t *testing.T) {
 	}
 	defer s.Close()
 
-	repo := NewSQLiteBookletRepository(s.DB())
+	repo := NewRepository(s.DB())
 	repo.SaveBooklet(&booklet.Booklet{ID: "b1", Title: "First"})
 	repo.SaveBooklet(&booklet.Booklet{ID: "b2", Title: "Second"})
 
@@ -117,7 +117,7 @@ func TestSQLiteDeleteBooklet(t *testing.T) {
 	}
 	defer s.Close()
 
-	repo := NewSQLiteBookletRepository(s.DB())
+	repo := NewRepository(s.DB())
 	repo.SaveBooklet(&booklet.Booklet{ID: "b1", Title: "Test"})
 
 	if err := repo.DeleteBooklet("b1"); err != nil {
@@ -137,7 +137,7 @@ func TestSQLiteDeleteSection(t *testing.T) {
 	}
 	defer s.Close()
 
-	repo := NewSQLiteBookletRepository(s.DB())
+	repo := NewRepository(s.DB())
 	repo.SaveBooklet(&booklet.Booklet{ID: "b1", Title: "Test"})
 	repo.SaveSection("b1", &booklet.Section{ID: "s1", Title: "Test", Level: 2, Status: section.SectionStatusDraft})
 
@@ -158,7 +158,7 @@ func TestSQLiteFullRoundTrip(t *testing.T) {
 	}
 	defer s.Close()
 
-	repo := NewSQLiteBookletRepository(s.DB())
+	repo := NewRepository(s.DB())
 
 	now := time.Now()
 	b := &booklet.Booklet{
@@ -227,7 +227,7 @@ func TestSQLiteFileBackedListBooklets(t *testing.T) {
 	}
 	defer s.Close()
 
-	repo := NewSQLiteBookletRepository(s.DB())
+	repo := NewRepository(s.DB())
 	for _, id := range []string{"b1", "b2"} {
 		b := &booklet.Booklet{ID: id, Title: "Booklet " + id, Status: booklet.BookletStatusDraft}
 		b.CreatedAt = time.Now()
@@ -254,7 +254,7 @@ func TestSQLiteFileBackedListBooklets(t *testing.T) {
 		t.Fatalf("reopen failed: %v", err)
 	}
 	defer s2.Close()
-	if _, err := NewSQLiteBookletRepository(s2.DB()).GetAllBooklets(); err != nil {
+	if _, err := NewRepository(s2.DB()).GetAllBooklets(); err != nil {
 		t.Fatalf("GetAllBooklets after reopen failed: %v", err)
 	}
 }
@@ -289,6 +289,56 @@ func TestSQLiteMigrationFromOldSchema(t *testing.T) {
 	if err != nil {
 		t.Fatalf("seeding old schema failed: %v", err)
 	}
+	_, err = raw.Exec(`CREATE TABLE sections (
+		id TEXT NOT NULL,
+		booklet_id TEXT NOT NULL,
+		parent_id TEXT,
+		title TEXT NOT NULL,
+		level INTEGER NOT NULL,
+		prompt TEXT,
+		content TEXT,
+		dependencies TEXT,
+		context_refs TEXT,
+		status TEXT NOT NULL DEFAULT 'draft',
+		provider TEXT,
+		model TEXT,
+		prompt_snapshot TEXT,
+		temperature REAL,
+		max_tokens INTEGER,
+		input_tokens INTEGER DEFAULT 0,
+		output_tokens INTEGER DEFAULT 0,
+		duration_ms INTEGER DEFAULT 0,
+		created_at TEXT NOT NULL,
+		updated_at TEXT NOT NULL,
+		PRIMARY KEY (id, booklet_id)
+	)`)
+	if err != nil {
+		t.Fatalf("creating old sections failed: %v", err)
+	}
+	_, err = raw.Exec(`INSERT INTO sections
+		(id, booklet_id, parent_id, title, level, prompt, content, dependencies, context_refs, status,
+		 provider, model, prompt_snapshot, temperature, max_tokens, input_tokens, output_tokens, duration_ms,
+		 created_at, updated_at)
+		VALUES ('s1', 'b1', '', 'Old Section', 2, '', 'Body.', '', '', 'generated',
+		 'fake', 'm', 'p', NULL, 0, 1, 2, 0,
+		 '2026-01-01T00:00:00Z', '2026-01-02T00:00:00Z')`)
+	if err != nil {
+		t.Fatalf("seeding old section failed: %v", err)
+	}
+	_, err = raw.Exec(`CREATE TABLE booklet_references (
+		id TEXT PRIMARY KEY,
+		booklet_id TEXT NOT NULL,
+		depends_on TEXT,
+		description TEXT
+	)`)
+	if err != nil {
+		t.Fatalf("creating old references failed: %v", err)
+	}
+	_, err = raw.Exec(`INSERT INTO booklet_references (id, booklet_id, depends_on, description)
+		VALUES ('r1', 'b1', '"s1"', 'Depends on s1')`)
+	if err != nil {
+		t.Fatalf("seeding old reference failed: %v", err)
+	}
 	if err := raw.Close(); err != nil {
 		t.Fatalf("raw close failed: %v", err)
 	}
@@ -299,13 +349,22 @@ func TestSQLiteMigrationFromOldSchema(t *testing.T) {
 	}
 	defer s.Close()
 
-	repo := NewSQLiteBookletRepository(s.DB())
+	repo := NewRepository(s.DB())
 	got, err := repo.GetBooklet("b1")
 	if err != nil {
 		t.Fatalf("GetBooklet failed: %v", err)
 	}
 	if got.Title != "Legacy" || got.Header != "" || got.ShowFooter {
 		t.Errorf("booklet = %+v, want legacy row with empty header/footer", got)
+	}
+	if len(got.Sections) != 1 || got.Sections[0].Title != "Old Section" {
+		t.Errorf("sections = %+v, want the legacy section", got.Sections)
+	}
+	if len(got.Sections) == 1 && got.Sections[0].Generation == nil {
+		t.Error("legacy section should load generation metadata")
+	}
+	if len(got.References) != 1 || got.References[0].ID != "r1" {
+		t.Errorf("references = %+v, want the legacy reference", got.References)
 	}
 	if _, err := repo.GetAllBooklets(); err != nil {
 		t.Fatalf("GetAllBooklets failed: %v", err)
@@ -355,11 +414,80 @@ func TestSQLiteMigrationBackfillsNulls(t *testing.T) {
 	}
 	defer s.Close()
 
-	got, err := NewSQLiteBookletRepository(s.DB()).GetBooklet("b1")
+	got, err := NewRepository(s.DB()).GetBooklet("b1")
 	if err != nil {
 		t.Fatalf("GetBooklet failed: %v", err)
 	}
 	if got.Title != "Nulls" || got.Header != "" || got.Footer != "" || got.ShowFooter {
 		t.Errorf("booklet = %+v, want backfilled defaults", got)
 	}
+}
+
+func TestMigrationsRecordedAndIdempotent(t *testing.T) {
+	s, err := NewSQLiteStorage(":memory:")
+	if err != nil {
+		t.Fatalf("NewSQLiteStorage failed: %v", err)
+	}
+	defer s.Close()
+
+	versions, err := appliedVersions(s.DB())
+	if err != nil {
+		t.Fatalf("appliedVersions failed: %v", err)
+	}
+	if len(versions) != len(migrationList()) {
+		t.Fatalf("applied versions = %v, want all %d migrations", versions, len(migrationList()))
+	}
+	for i, v := range versions {
+		if v != i+1 {
+			t.Fatalf("applied versions = %v, want sequential from 1", versions)
+		}
+	}
+
+	if err := Migrate(s.DB()); err != nil {
+		t.Fatalf("re-migrate failed: %v", err)
+	}
+	again, err := appliedVersions(s.DB())
+	if err != nil {
+		t.Fatalf("appliedVersions failed: %v", err)
+	}
+	if len(again) != len(versions) {
+		t.Errorf("re-migrate recorded %d versions, want %d", len(again), len(versions))
+	}
+}
+
+func TestParseDriver(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		want    Driver
+		wantErr bool
+	}{
+		{"", DriverSQLite, false},
+		{"sqlite", DriverSQLite, false},
+		{"postgres", DriverPostgres, false},
+		{"mysql", DriverMySQL, false},
+		{"oracle", "", true},
+	} {
+		got, err := ParseDriver(tc.name)
+		if tc.wantErr && err == nil {
+			t.Errorf("ParseDriver(%q) should return an error", tc.name)
+		}
+		if !tc.wantErr && (err != nil || got != tc.want) {
+			t.Errorf("ParseDriver(%q) = %v, %v; want %v, nil", tc.name, got, err, tc.want)
+		}
+	}
+}
+
+func TestOpenSQLiteMemory(t *testing.T) {
+	db, err := Open(DriverSQLite, ":memory:")
+	if err != nil {
+		t.Fatalf("Open failed: %v", err)
+	}
+	if DriverName(db) == "" {
+		t.Error("DriverName should report the dialect")
+	}
+	sqlDB, err := db.DB()
+	if err != nil {
+		t.Fatalf("DB() failed: %v", err)
+	}
+	sqlDB.Close()
 }

@@ -397,3 +397,77 @@ func TestImportEndpoint(t *testing.T) {
 		t.Errorf("stored sections = %d, want 1", len(stored.Sections))
 	}
 }
+
+func TestDeleteSectionEndpoint(t *testing.T) {
+	server, svc := testMux(t, &fakeProvider{})
+	if _, err := svc.CreateBooklet("b1", "Guide", "sop", "", ""); err != nil {
+		t.Fatalf("CreateBooklet failed: %v", err)
+	}
+	if err := svc.AddSection("b1", &booklet.Section{ID: "s1", Title: "Step", Level: 2, Content: "Do it.\n", Status: "draft"}); err != nil {
+		t.Fatalf("AddSection failed: %v", err)
+	}
+
+	req, _ := http.NewRequest(http.MethodDelete, server.URL+"/api/v1/booklets/b1/sections/s1", nil)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("DELETE section failed: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusNoContent {
+		t.Errorf("status = %d, want 204", resp.StatusCode)
+	}
+	if _, err := svc.GetSection("b1", "s1"); err == nil {
+		t.Error("section should be gone after delete")
+	}
+
+	missing, _ := http.NewRequest(http.MethodDelete, server.URL+"/api/v1/booklets/b1/sections/nope", nil)
+	missingResp, err := http.DefaultClient.Do(missing)
+	if err != nil {
+		t.Fatalf("DELETE section failed: %v", err)
+	}
+	defer missingResp.Body.Close()
+	if missingResp.StatusCode != http.StatusNotFound {
+		t.Errorf("status = %d, want 404", missingResp.StatusCode)
+	}
+}
+
+func TestUpdateSectionLevelEndpoint(t *testing.T) {
+	server, svc := testMux(t, &fakeProvider{})
+	if _, err := svc.CreateBooklet("b1", "Guide", "sop", "", ""); err != nil {
+		t.Fatalf("CreateBooklet failed: %v", err)
+	}
+	if err := svc.AddSection("b1", &booklet.Section{ID: "s1", Title: "Step", Level: 2, Content: "Do it.\n", Status: "draft"}); err != nil {
+		t.Fatalf("AddSection failed: %v", err)
+	}
+
+	req, _ := http.NewRequest(http.MethodPut, server.URL+"/api/v1/booklets/b1/sections/s1",
+		strings.NewReader(`{"level":3}`))
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("PUT section failed: %v", err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("status = %d, want 200", resp.StatusCode)
+	}
+	updated, err := svc.GetSection("b1", "s1")
+	if err != nil {
+		t.Fatalf("GetSection failed: %v", err)
+	}
+	if updated.Level != 3 {
+		t.Errorf("level = %d, want 3", updated.Level)
+	}
+
+	bad, _ := http.NewRequest(http.MethodPut, server.URL+"/api/v1/booklets/b1/sections/s1",
+		strings.NewReader(`{"level":9}`))
+	bad.Header.Set("Content-Type", "application/json")
+	badResp, err := http.DefaultClient.Do(bad)
+	if err != nil {
+		t.Fatalf("PUT section failed: %v", err)
+	}
+	defer badResp.Body.Close()
+	if badResp.StatusCode != http.StatusBadRequest {
+		t.Errorf("status = %d, want 400", badResp.StatusCode)
+	}
+}

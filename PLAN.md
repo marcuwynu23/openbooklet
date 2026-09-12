@@ -2649,8 +2649,9 @@ That gives OpenBooklet a very clear identity:
 ```text
 Phase 1 — Core Go Engine ............ Booklet/Section models, services,
                                        in-memory repos, status state machines
-Phase 2 — Storage ................... SQLite repositories (booklets, sections,
-                                       history, references), :memory: tests
+Phase 2 — Storage ................... GORM ORM over SQLite (default), Postgres,
+                                       MySQL; versioned migrations with NULL
+                                       backfills; file-backed + upgrade tests
 Phase 3 — `.obk` Format .............. Versioned YAML serializer/deserializer,
                                        header/footer/show_footer fields,
                                        golden-file + lossless round-trip tests

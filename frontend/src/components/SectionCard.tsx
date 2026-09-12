@@ -98,6 +98,33 @@ export function SectionCard({
     }
   }
 
+  async function changeLevel(level: number): Promise<void> {
+    if (level === section.level || saving) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await api.updateSection(bookletId, section.id, { level });
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'level change failed');
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function removeSection(): Promise<void> {
+    if (!window.confirm(`Delete section "${section.title}"? This cannot be undone.`)) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await api.deleteSection(bookletId, section.id);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'delete failed');
+      setSaving(false);
+    }
+  }
+
   return (
     <article className="section">
       <header className="section-head">
@@ -114,6 +141,20 @@ export function SectionCard({
         <span className="section-level">
           {index}. {'#'.repeat(Math.min(section.level, 6))}
         </span>
+        <select
+          value={section.level}
+          onChange={(e) => void changeLevel(Number(e.target.value))}
+          title="Heading level"
+          aria-label={`Heading level for section ${section.title}`}
+          className="level-select"
+          disabled={saving}
+        >
+          {[1, 2, 3, 4, 5, 6].map((n) => (
+            <option key={n} value={n}>
+              H{n}
+            </option>
+          ))}
+        </select>
         {titleEditing ? (
           <input
             value={title}
@@ -205,6 +246,9 @@ export function SectionCard({
       <footer className="section-foot">
         <button type="button" disabled={!dirty || saving} onClick={() => void save()}>
           {saving ? 'Saving…' : 'Save'}
+        </button>
+        <button type="button" className="danger-btn" disabled={saving} onClick={() => void removeSection()}>
+          Delete
         </button>
         <span className="ai-group">
           <button type="button" disabled={aiBusy !== null} onClick={() => void ai('regenerate')}>

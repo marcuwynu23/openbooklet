@@ -18,6 +18,7 @@ func (s Secret) String() string {
 type Config struct {
 	Port             int
 	Host             string
+	DatabaseDriver   string
 	DatabasePath     string
 	StoragePath      string
 	ProviderName     string
@@ -31,14 +32,15 @@ type Config struct {
 // NewDefaultConfig creates a configuration with sensible defaults.
 func NewDefaultConfig() *Config {
 	return &Config{
-		Port:          8080,
-		Host:          "localhost",
-		DatabasePath:  "./data/openbooklet.db",
-		StoragePath:   "./data",
-		ProviderName:  "",
-		ProviderModel: "",
-		LogLevel:      "info",
-		Timeout:       30 * time.Second,
+		Port:           8080,
+		Host:           "localhost",
+		DatabaseDriver: "sqlite",
+		DatabasePath:   "./data/openbooklet.db",
+		StoragePath:    "./data",
+		ProviderName:   "",
+		ProviderModel:  "",
+		LogLevel:       "info",
+		Timeout:        30 * time.Second,
 	}
 }
 
@@ -78,6 +80,9 @@ func LoadFromEnv() *Config {
 	}
 	if dbPath := os.Getenv("OPENBOOKLET_DB_PATH"); dbPath != "" {
 		cfg.DatabasePath = dbPath
+	}
+	if dbDriver := os.Getenv("OPENBOOKLET_DB_DRIVER"); dbDriver != "" {
+		cfg.DatabaseDriver = dbDriver
 	}
 	if storagePath := os.Getenv("OPENBOOKLET_STORAGE_PATH"); storagePath != "" {
 		cfg.StoragePath = storagePath

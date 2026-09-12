@@ -33,7 +33,11 @@ func runServer(cfg *config.Config) error {
 			return fmt.Errorf("creating data directory: %w", err)
 		}
 	}
-	store, err := storage.NewSQLiteStorage(cfg.DatabasePath)
+	driver, err := storage.ParseDriver(cfg.DatabaseDriver)
+	if err != nil {
+		return fmt.Errorf("database configuration: %w", err)
+	}
+	store, err := storage.OpenStorage(driver, cfg.DatabasePath)
 	if err != nil {
 		return fmt.Errorf("opening storage: %w", err)
 	}
@@ -43,7 +47,7 @@ func runServer(cfg *config.Config) error {
 	if err != nil {
 		return err
 	}
-	mux := buildMux(booklet.NewService(storage.NewSQLiteBookletRepository(store.DB())), p, model, cfg, "frontend/dist")
+	mux := buildMux(booklet.NewService(storage.NewRepository(store.DB())), p, model, cfg, "frontend/dist")
 
 	addr := net.JoinHostPort(cfg.Host, strconv.Itoa(cfg.Port))
 	server := &http.Server{
@@ -99,6 +103,7 @@ func buildMux(svc *booklet.Service, p provider.Provider, model string, cfg *conf
 	mux.HandleFunc("PUT /api/v1/booklets/{id}", s.handleRenameBooklet)
 	mux.HandleFunc("DELETE /api/v1/booklets/{id}", s.handleDeleteBooklet)
 	mux.HandleFunc("PUT /api/v1/booklets/{id}/sections/{sectionID}", s.handleUpdateSection)
+	mux.HandleFunc("DELETE /api/v1/booklets/{id}/sections/{sectionID}", s.handleDeleteSection)
 	mux.HandleFunc("POST /api/v1/booklets/{id}/sections", s.handleCreateSection)
 	mux.HandleFunc("POST /api/v1/booklets/{id}/generate", s.handleGenerate)
 	mux.HandleFunc("POST /api/v1/booklets/{id}/sections/{sectionID}/regenerate", s.handleRegenerate)
@@ -344,6 +349,14 @@ func (s *apiServer) handleDeleteBooklet(w http.ResponseWriter, r *http.Request) 
 	w.WriteHeader(http.StatusNoContent)
 }
 
+func (s *apiServer) handleDeleteSection(w http.ResponseWriter, r *http.Request) {
+	if err := s.svc.DeleteSection(r.PathValue("id"), r.PathValue("sectionID")); err != nil {
+		writeError(w, http.StatusNotFound, "not_found", "booklet or section not found")
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func (s *apiServer) handleCreateSection(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Title    string  `json:"title"`
@@ -392,12 +405,13 @@ func (s *apiServer) handleUpdateSection(w http.ResponseWriter, r *http.Request) 
 		Title   *string `json:"title"`
 		Prompt  *string `json:"prompt"`
 		Content *string `json:"content"`
+		Level   *int    `json:"level"`
 	}
 	if err := decodeBody(r, &req); err != nil {
 		writeError(w, http.StatusBadRequest, "bad_request", err.Error())
 		return
 	}
-	sec, err := s.svc.UpdateSection(r.PathValue("id"), r.PathValue("sectionID"), req.Title, req.Prompt, req.Content)
+	sec, err := s.svc.UpdateSection(r.PathValue("id"), r.PathValue("sectionID"), req.Title, req.Prompt, req.Content, req.Level)
 	if err != nil {
 		if _, lookupErr := s.svc.GetSection(r.PathValue("id"), r.PathValue("sectionID")); lookupErr != nil {
 			writeError(w, http.StatusNotFound, "not_found", "booklet or section not found")
@@ -498,7 +512,7 @@ func (s *apiServer) handleRegenerate(w http.ResponseWriter, r *http.Request) {
 		mode = booklet.RegenerateRewrite
 	}
 	if strings.TrimSpace(req.Prompt) != "" {
-		if _, err := s.svc.UpdateSection(r.PathValue("id"), r.PathValue("sectionID"), nil, &req.Prompt, nil); err != nil {
+		if _, err := s.svc.UpdateSection(r.PathValue("id"), r.PathValue("sectionID"), nil, &req.Prompt, nil, nil); err != nil {
 			writeError(w, http.StatusNotFound, "not_found", "booklet or section not found")
 			return
 		}

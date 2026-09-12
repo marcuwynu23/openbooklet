@@ -98,7 +98,10 @@ func (s *Service) DeleteSection(bookletID, sectionID string) error {
 
 // UpdateSection applies a partial update to a section's editable fields.
 // Status is left untouched; status changes go through ChangeSectionStatus.
-func (s *Service) UpdateSection(bookletID, sectionID string, title, prompt, content *string) (*Section, error) {
+// Changing the level re-validates the tree: a parent that no longer sits
+// above the section is detached (the section becomes top-level) rather than
+// left in an invalid state.
+func (s *Service) UpdateSection(bookletID, sectionID string, title, prompt, content *string, level *int) (*Section, error) {
 	sec, err := s.repo.GetSection(bookletID, sectionID)
 	if err != nil {
 		return nil, err
@@ -112,14 +115,47 @@ func (s *Service) UpdateSection(bookletID, sectionID string, title, prompt, cont
 	if content != nil {
 		sec.Content = *content
 	}
+	if level != nil {
+		if *level < 1 || *level > 6 {
+			return nil, fmt.Errorf("level must be 1-6, got %d", *level)
+		}
+		sec.Level = *level
+	}
 	sec.UpdatedAt = timeNow()
 	if err := sec.Validate(); err != nil {
 		return nil, err
+	}
+	if level != nil {
+		if err := s.revalidateParent(bookletID, sec); err != nil {
+			return nil, err
+		}
 	}
 	if err := s.repo.SaveSection(bookletID, sec); err != nil {
 		return nil, fmt.Errorf("saving section: %w", err)
 	}
 	return sec, nil
+}
+
+// revalidateParent detaches a section whose parent no longer sits above it
+// after a level change. Validation runs against the booklet tree with the
+// change applied.
+func (s *Service) revalidateParent(bookletID string, sec *Section) error {
+	b, err := s.repo.GetBooklet(bookletID)
+	if err != nil {
+		return err
+	}
+	stored := b.FindSectionByID(sec.ID)
+	if stored == nil {
+		return fmt.Errorf("section %q not found in booklet %q", sec.ID, bookletID)
+	}
+	stored.Level = sec.Level
+	if sec.ParentID != nil {
+		if parent := b.FindSectionByID(*sec.ParentID); parent != nil && parent.Level >= sec.Level {
+			sec.ParentID = nil
+			stored.ParentID = nil
+		}
+	}
+	return b.validateHierarchy()
 }
 
 // ChangeSectionStatus transitions a section to a new status.
