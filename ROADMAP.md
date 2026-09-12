@@ -30,6 +30,6 @@ unchecked phases are upcoming work defined in [PLAN.md](PLAN.md).
 - [ ] **Phase 11 — Review Engine** — Completeness/consistency/terminology checks as findings, never silent edits
 - [ ] **Phase 12 — Export** — HTML (then PDF/DOCX) alongside Markdown
 - [ ] **Phase 13 — Git Integration** — Repo detection, status, diff, commit flows
-- [ ] **Phase 14 — Diagrams** — Mermaid rendering, then diagram generation
+- [ ] **Phase 14 — Diagrams** — Mermaid rendering in previews (done, lazy-loaded); diagram generation planned
 - [ ] **Phase 15 — Advanced AI Workflows** — Whole-booklet actions, batch generation, dependent regen, doc conversion
 - [ ] **Phase 16 — v1.0** — Full end-to-end shippable product (releases, Docker, CI)

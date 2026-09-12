@@ -445,6 +445,22 @@ body {
   text-align: center;
 }
 
+.mermaid-diagram {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0;
+  overflow-x: auto;
+}
+
+.mermaid-diagram svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.mermaid-error {
+  border: 1px solid #cf222e;
+}
+
 .doc-block {
   border: 1px dashed #d0d7de;
   border-radius: 6px;

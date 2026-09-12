@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api, type RegenerateMode, type Section } from '../api';
-import { renderMarkdown } from '../markdown';
+import { Markdown } from './Markdown';
 import { useBookletStore } from '../stores';
 
 function statusColor(status: string): string {
@@ -229,12 +229,7 @@ export function SectionCard({
         </button>
       </div>
       {tab === 'preview' ? (
-        <div
-          className="markdown"
-          dangerouslySetInnerHTML={{
-            __html: section.content === '' ? '<i>(empty)</i>' : renderMarkdown(section.content),
-          }}
-        />
+        <Markdown content={section.content} />
       ) : (
         <textarea
           className="editor"

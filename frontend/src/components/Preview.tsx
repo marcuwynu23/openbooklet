@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import type { Booklet } from '../api';
-import { renderMarkdown } from '../markdown';
+import { Markdown } from './Markdown';
 import { useBookletStore } from '../stores';
 
 function todayBlock(): string {
@@ -64,7 +64,7 @@ export function Preview({ booklet }: { booklet: Booklet }) {
   const [editingHeader, setEditingHeader] = useState(false);
   const [editingFooter, setEditingFooter] = useState(false);
 
-  const html = useMemo(() => {
+  const composed = useMemo(() => {
     const parts = [`# ${booklet.title}`];
     for (const section of booklet.sections) {
       parts.push(`${'#'.repeat(Math.min(Math.max(section.level, 1), 6))} ${section.title}`);
@@ -72,7 +72,7 @@ export function Preview({ booklet }: { booklet: Booklet }) {
         parts.push(section.content.replace(/\s+$/, ''));
       }
     }
-    return renderMarkdown(parts.join('\n\n') + '\n');
+    return parts.join('\n\n') + '\n';
   }, [booklet]);
 
   async function saveHeader(value: string): Promise<void> {
@@ -119,11 +119,11 @@ export function Preview({ booklet }: { booklet: Booklet }) {
             No header yet — add one with a date like <code>Date: January 1, 2020</code> and a description.
           </p>
         ) : (
-          <div className="markdown" dangerouslySetInnerHTML={{ __html: renderMarkdown(booklet.header) }} />
+          <Markdown content={booklet.header} />
         )}
       </header>
 
-      <div className="markdown" dangerouslySetInnerHTML={{ __html: html }} />
+      <Markdown content={composed} />
 
       <footer className="doc-block">
         <div className="doc-block-head">
@@ -157,7 +157,7 @@ export function Preview({ booklet }: { booklet: Booklet }) {
             onCancel={() => setEditingFooter(false)}
           />
         ) : booklet.showFooter && booklet.footer !== '' ? (
-          <div className="markdown" dangerouslySetInnerHTML={{ __html: renderMarkdown(booklet.footer) }} />
+          <Markdown content={booklet.footer} />
         ) : (
           <p className="muted">{booklet.showFooter ? 'No footer text yet.' : 'Footer hidden.'}</p>
         )}
