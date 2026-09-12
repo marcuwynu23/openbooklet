@@ -12,6 +12,15 @@ import (
 // booklet domain model. All Section operations are delegated to the section package.
 type Section = section.Section
 
+// SectionStatus is an alias for section.SectionStatus.
+type SectionStatus = section.SectionStatus
+
+// ContentVersion is an alias for section.ContentVersion.
+type ContentVersion = section.ContentVersion
+
+// GenerationMetadata is an alias for section.GenerationMetadata.
+type GenerationMetadata = section.GenerationMetadata
+
 // BookletStatus represents the lifecycle status of a booklet.
 type BookletStatus string
 
@@ -48,29 +57,6 @@ func (s BookletStatus) CanTransitionTo(target BookletStatus) bool {
 		}
 	}
 	return false
-}
-
-// GenerationMetadata stores AI generation details for reproducibility and auditability.
-type GenerationMetadata struct {
-	Provider     string
-	Model        string
-	Prompt       string
-	ContextRefs  []string
-	Temperature  *float64
-	MaxTokens    *int
-	InputTokens  int
-	OutputTokens int
-	Duration     time.Duration
-	CreatedAt    time.Time
-}
-
-// ContentVersion represents a version of section content for history tracking.
-type ContentVersion struct {
-	Version     int
-	Content     string
-	Status      string
-	Description string
-	CreatedAt   time.Time
 }
 
 // Reference defines a dependency or reference between sections.
