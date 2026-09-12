@@ -69,6 +69,9 @@ type obkBooklet struct {
 	Audience     string `yaml:"audience,omitempty"`
 	Instructions string `yaml:"instructions,omitempty"`
 	Template     string `yaml:"template,omitempty"`
+	Header       string `yaml:"header,omitempty"`
+	Footer       string `yaml:"footer,omitempty"`
+	ShowFooter   bool   `yaml:"show_footer,omitempty"`
 	CreatedAt    string `yaml:"created_at,omitempty"`
 	UpdatedAt    string `yaml:"updated_at,omitempty"`
 }
@@ -136,6 +139,9 @@ func newOBKBooklet(b *Booklet) obkBooklet {
 		Audience:     b.Audience,
 		Instructions: b.Instructions,
 		Template:     b.Template,
+		Header:       b.Header,
+		Footer:       b.Footer,
+		ShowFooter:   b.ShowFooter,
 		CreatedAt:    formatOBKTime(b.CreatedAt),
 		UpdatedAt:    formatOBKTime(b.UpdatedAt),
 	}
@@ -255,6 +261,9 @@ func (d *obkDocument) toModel() (*Booklet, error) {
 		Audience:     d.Booklet.Audience,
 		Instructions: d.Booklet.Instructions,
 		Template:     d.Booklet.Template,
+		Header:       d.Booklet.Header,
+		Footer:       d.Booklet.Footer,
+		ShowFooter:   d.Booklet.ShowFooter,
 		References:   references,
 		Sections:     sections,
 		CreatedAt:    createdAt,

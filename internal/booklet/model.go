@@ -95,10 +95,16 @@ type Booklet struct {
 	Audience     string
 	Instructions string
 	Template     string
-	References   []Reference
-	Sections     []Section
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	// Header and Footer are Markdown blocks rendered above and below the
+	// sections in the full preview. The footer shows only when ShowFooter
+	// is true.
+	Header     string
+	Footer     string
+	ShowFooter bool
+	References []Reference
+	Sections   []Section
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
 // Validate checks the booklet and all sections for structural validity.

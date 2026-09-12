@@ -165,6 +165,9 @@ func TestSQLiteFullRoundTrip(t *testing.T) {
 		Status:       booklet.BookletStatusDraft,
 		Audience:     "devops",
 		Instructions: "Use formal language.",
+		Header:       "Date: September 12, 2026\n",
+		Footer:       "End of document.\n",
+		ShowFooter:   true,
 		Sections: []booklet.Section{
 			{
 				ID:        "s1",
@@ -203,5 +206,8 @@ func TestSQLiteFullRoundTrip(t *testing.T) {
 	}
 	if len(got.References) != 1 {
 		t.Errorf("References count = %d, want 1", len(got.References))
+	}
+	if got.Header != "Date: September 12, 2026\n" || got.Footer != "End of document.\n" || !got.ShowFooter {
+		t.Errorf("header/footer = %q/%q/%v", got.Header, got.Footer, got.ShowFooter)
 	}
 }

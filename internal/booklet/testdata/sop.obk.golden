@@ -10,6 +10,13 @@ booklet:
         Use formal technical language.
         Do not invent infrastructure information.
     template: sop
+    header: |
+        Date: September 12, 2026
+
+        Kubernetes deployment runbook.
+    footer: |
+        Reviewed by platform engineering.
+    show_footer: true
     created_at: "2026-09-12T12:00:00Z"
     updated_at: "2026-09-12T12:30:00Z"
 sections:

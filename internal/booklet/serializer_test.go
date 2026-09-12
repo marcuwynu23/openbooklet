@@ -30,6 +30,9 @@ func obkTestBooklet() *Booklet {
 		Audience:     "l1-operations",
 		Instructions: "Use formal technical language.\nDo not invent infrastructure information.\n",
 		Template:     "sop",
+		Header:       "Date: September 12, 2026\n\nKubernetes deployment runbook.\n",
+		Footer:       "Reviewed by platform engineering.\n",
+		ShowFooter:   true,
 		References: []Reference{
 			{ID: "deploy-order", DependsOn: []string{"prerequisites"}, Description: "Deploy only after prerequisites"},
 		},

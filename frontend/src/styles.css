@@ -392,57 +392,12 @@ body {
   padding: 24px 32px;
 }
 
-.doc-header {
-  border-bottom: 1px solid #d0d7de;
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-}
-
-.doc-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 24px;
-  margin: 0 0 8px;
-}
-
-.doc-meta div {
-  display: flex;
-  gap: 6px;
-  font-size: 13px;
-}
-
-.doc-meta dt {
-  color: #57606a;
-}
-
-.doc-meta dd {
-  margin: 0;
-  font-weight: 600;
-}
-
-.doc-description p {
-  margin: 4px 0;
-  color: #57606a;
-  font-size: 14px;
-}
-
-.doc-description textarea {
-  width: 100%;
-  box-sizing: border-box;
-  font-family: inherit;
-  font-size: 14px;
-  border: 1px solid #0969da;
-  border-radius: 6px;
-  padding: 8px;
-}
-
 .footer-toggle {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   font-size: 13px;
   color: #57606a;
-  margin-top: 8px;
   cursor: pointer;
 }
 
@@ -453,4 +408,29 @@ body {
   color: #57606a;
   font-size: 13px;
   text-align: center;
+}
+
+.doc-block {
+  border: 1px dashed #d0d7de;
+  border-radius: 6px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  background: #f6f8fa;
+}
+
+.doc-block-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.doc-block-head .muted {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.collapse-btn {
+  font-size: 12px;
 }

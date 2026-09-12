@@ -38,6 +38,7 @@ export function SectionCard({
   const [instruction, setInstruction] = useState('');
   const [showEdit, setShowEdit] = useState(false);
   const [titleEditing, setTitleEditing] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -100,6 +101,16 @@ export function SectionCard({
   return (
     <article className="section">
       <header className="section-head">
+        <button
+          type="button"
+          className="icon-btn collapse-btn"
+          title={collapsed ? 'Expand section' : 'Collapse section'}
+          aria-label={collapsed ? `Expand section ${section.title}` : `Collapse section ${section.title}`}
+          aria-expanded={!collapsed}
+          onClick={() => setCollapsed((v) => !v)}
+        >
+          {collapsed ? '▶' : '▼'}
+        </button>
         <span className="section-level">
           {index}. {'#'.repeat(Math.min(section.level, 6))}
         </span>
@@ -140,12 +151,14 @@ export function SectionCard({
           {section.status}
         </span>
       </header>
-      {section.prompt !== '' && (
-        <details className="prompt">
-          <summary>Prompt</summary>
-          <pre>{section.prompt}</pre>
-        </details>
-      )}
+      {!collapsed && (
+        <>
+          {section.prompt !== '' && (
+            <details className="prompt">
+              <summary>Prompt</summary>
+              <pre>{section.prompt}</pre>
+            </details>
+          )}
       <div className="tabs" role="tablist">
         <button
           type="button"
@@ -218,6 +231,8 @@ export function SectionCard({
             {aiBusy === 'edit' ? 'Working…' : 'Apply'}
           </button>
         </div>
+      )}
+      </>
       )}
     </article>
   );

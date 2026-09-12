@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { SectionCard } from './components/SectionCard';
 import { GeneratePanel } from './components/GeneratePanel';
-import { FullPreview } from './components/FullPreview';
+import { Preview } from './components/Preview';
 import { AddSectionForm } from './components/AddSectionForm';
 import { useBookletStore } from './stores';
 import './styles.css';
@@ -126,11 +126,11 @@ export function App() {
                 className={view === 'preview' ? 'active' : ''}
                 onClick={() => setView('preview')}
               >
-                Full preview
+                Preview
               </button>
             </div>
             {view === 'preview' ? (
-              <FullPreview booklet={booklet} />
+              <Preview booklet={booklet} />
             ) : (
               <>
                 <GeneratePanel bookletId={booklet.id} />

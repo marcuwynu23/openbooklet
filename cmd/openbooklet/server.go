@@ -207,6 +207,9 @@ type bookletDTO struct {
 	Status       string       `json:"status"`
 	Audience     string       `json:"audience"`
 	Instructions string       `json:"instructions"`
+	Header       string       `json:"header"`
+	Footer       string       `json:"footer"`
+	ShowFooter   bool         `json:"showFooter"`
 	Sections     []sectionDTO `json:"sections"`
 	CreatedAt    string       `json:"createdAt"`
 	UpdatedAt    string       `json:"updatedAt"`
@@ -237,6 +240,9 @@ func toBookletDTO(b *booklet.Booklet) bookletDTO {
 		Status:       string(b.Status),
 		Audience:     b.Audience,
 		Instructions: b.Instructions,
+		Header:       b.Header,
+		Footer:       b.Footer,
+		ShowFooter:   b.ShowFooter,
 		Sections:     sections,
 		CreatedAt:    b.CreatedAt.UTC().Format(time.RFC3339),
 		UpdatedAt:    b.UpdatedAt.UTC().Format(time.RFC3339),
@@ -283,6 +289,9 @@ func (s *apiServer) handleRenameBooklet(w http.ResponseWriter, r *http.Request) 
 		Type         *string `json:"type"`
 		Audience     *string `json:"audience"`
 		Instructions *string `json:"instructions"`
+		Header       *string `json:"header"`
+		Footer       *string `json:"footer"`
+		ShowFooter   *bool   `json:"showFooter"`
 	}
 	if err := decodeBody(r, &req); err != nil {
 		writeError(w, http.StatusBadRequest, "bad_request", err.Error())
@@ -308,6 +317,15 @@ func (s *apiServer) handleRenameBooklet(w http.ResponseWriter, r *http.Request) 
 	}
 	if req.Instructions != nil {
 		b.Instructions = *req.Instructions
+	}
+	if req.Header != nil {
+		b.Header = *req.Header
+	}
+	if req.Footer != nil {
+		b.Footer = *req.Footer
+	}
+	if req.ShowFooter != nil {
+		b.ShowFooter = *req.ShowFooter
 	}
 	if err := s.svc.UpdateBooklet(b); err != nil {
 		writeError(w, http.StatusBadRequest, "bad_request", err.Error())

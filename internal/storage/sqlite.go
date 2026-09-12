@@ -3,6 +3,7 @@ package storage
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	_ "modernc.org/sqlite" // SQLite driver
 )
@@ -54,6 +55,9 @@ func (s *Storage) runMigrations() error {
 			audience TEXT,
 			instructions TEXT,
 			template TEXT,
+			header TEXT,
+			footer TEXT,
+			show_footer INTEGER NOT NULL DEFAULT 0,
 			created_at TEXT NOT NULL,
 			updated_at TEXT NOT NULL
 		)`,
@@ -104,6 +108,22 @@ func (s *Storage) runMigrations() error {
 
 	for _, m := range migrations {
 		if _, err := s.db.Exec(m); err != nil {
+			return fmt.Errorf("migration failed: %w", err)
+		}
+	}
+
+	// Column additions for databases created before the column existed.
+	// Duplicate-column errors mean the migration already ran.
+	alters := []string{
+		`ALTER TABLE booklets ADD COLUMN header TEXT`,
+		`ALTER TABLE booklets ADD COLUMN footer TEXT`,
+		`ALTER TABLE booklets ADD COLUMN show_footer INTEGER NOT NULL DEFAULT 0`,
+	}
+	for _, m := range alters {
+		if _, err := s.db.Exec(m); err != nil {
+			if strings.Contains(err.Error(), "duplicate column name") {
+				continue
+			}
 			return fmt.Errorf("migration failed: %w", err)
 		}
 	}

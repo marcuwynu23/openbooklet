@@ -11,7 +11,13 @@ interface BookletState {
   select: (id: string) => Promise<void>;
   create: (title: string, docType: string) => Promise<void>;
   rename: (title: string) => Promise<void>;
-  updateDetails: (patch: { audience?: string; instructions?: string }) => Promise<void>;
+  updateDetails: (patch: {
+    audience?: string;
+    instructions?: string;
+    header?: string;
+    footer?: string;
+    showFooter?: boolean;
+  }) => Promise<void>;
   remove: () => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -82,7 +88,13 @@ export const useBookletStore = create<BookletState>()((set, get) => ({
     }
   },
 
-  async updateDetails(patch: { audience?: string; instructions?: string }) {
+  async updateDetails(patch: {
+    audience?: string;
+    instructions?: string;
+    header?: string;
+    footer?: string;
+    showFooter?: boolean;
+  }) {
     const { booklet } = get();
     if (booklet === null) return;
     set({ loading: true, error: null });

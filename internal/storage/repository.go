@@ -36,9 +36,9 @@ func (r *SQLiteBookletRepository) SaveBooklet(b *booklet.Booklet) error {
 	}
 
 	_, err := r.db.Exec(`
-		INSERT OR REPLACE INTO booklets (id, title, type, version, status, audience, instructions, template, created_at, updated_at)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`, b.ID, b.Title, b.Type, b.Version, b.Status, b.Audience, b.Instructions, b.Template, createdAt, updatedAt)
+		INSERT OR REPLACE INTO booklets (id, title, type, version, status, audience, instructions, template, header, footer, show_footer, created_at, updated_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`, b.ID, b.Title, b.Type, b.Version, b.Status, b.Audience, b.Instructions, b.Template, b.Header, b.Footer, boolToInt(b.ShowFooter), createdAt, updatedAt)
 	if err != nil {
 		return fmt.Errorf("saving booklet: %w", err)
 	}
@@ -139,7 +139,7 @@ func genField(g *booklet.GenerationMetadata, field string) string {
 // GetBooklet retrieves a booklet by ID.
 func (r *SQLiteBookletRepository) GetBooklet(id string) (*booklet.Booklet, error) {
 	row := r.db.QueryRow(`
-		SELECT id, title, type, version, status, audience, instructions, template, created_at, updated_at
+		SELECT id, title, type, version, status, audience, instructions, template, header, footer, show_footer, created_at, updated_at
 		FROM booklets WHERE id = ?
 	`, id)
 
@@ -227,7 +227,7 @@ func (r *SQLiteBookletRepository) loadHistory(bookletID, sectionID string) []boo
 // GetAllBooklets returns all stored booklets.
 func (r *SQLiteBookletRepository) GetAllBooklets() ([]*booklet.Booklet, error) {
 	rows, err := r.db.Query(`
-		SELECT id, title, type, version, status, audience, instructions, template, created_at, updated_at
+		SELECT id, title, type, version, status, audience, instructions, template, header, footer, show_footer, created_at, updated_at
 		FROM booklets ORDER BY updated_at DESC
 	`)
 	if err != nil {
@@ -329,9 +329,10 @@ func (r *SQLiteBookletRepository) getBookletReferences(bookletID string) ([]book
 // scanBookletRow scans *sql.Rows into a Booklet (for GetAllBooklets).
 func scanBookletRow(rows *sql.Rows) (*booklet.Booklet, error) {
 	var (
-		id, title, bookletType, version, status, audience, instructions, template, createdAt, updatedAt string
+		id, title, bookletType, version, status, audience, instructions, template, header, footer, createdAt, updatedAt string
+		showFooter                                                                                                      int64
 	)
-	if err := rows.Scan(&id, &title, &bookletType, &version, &status, &audience, &instructions, &template, &createdAt, &updatedAt); err != nil {
+	if err := rows.Scan(&id, &title, &bookletType, &version, &status, &audience, &instructions, &template, &header, &footer, &showFooter, &createdAt, &updatedAt); err != nil {
 		return nil, err
 	}
 
@@ -344,6 +345,9 @@ func scanBookletRow(rows *sql.Rows) (*booklet.Booklet, error) {
 		Audience:     audience,
 		Instructions: instructions,
 		Template:     template,
+		Header:       header,
+		Footer:       footer,
+		ShowFooter:   showFooter != 0,
 		CreatedAt:    parseTime(createdAt),
 		UpdatedAt:    parseTime(updatedAt),
 	}, nil
@@ -396,9 +400,10 @@ func scanSectionRow(rows *sql.Rows, sec *booklet.Section) error {
 // scanBookletRowSingle scans a *sql.Row into a Booklet.
 func scanBookletRowSingle(row *sql.Row) (*booklet.Booklet, error) {
 	var (
-		id, title, bookletType, version, status, audience, instructions, template, createdAt, updatedAt string
+		id, title, bookletType, version, status, audience, instructions, template, header, footer, createdAt, updatedAt string
+		showFooter                                                                                                      int64
 	)
-	if err := row.Scan(&id, &title, &bookletType, &version, &status, &audience, &instructions, &template, &createdAt, &updatedAt); err != nil {
+	if err := row.Scan(&id, &title, &bookletType, &version, &status, &audience, &instructions, &template, &header, &footer, &showFooter, &createdAt, &updatedAt); err != nil {
 		return nil, err
 	}
 
@@ -411,6 +416,9 @@ func scanBookletRowSingle(row *sql.Row) (*booklet.Booklet, error) {
 		Audience:     audience,
 		Instructions: instructions,
 		Template:     template,
+		Header:       header,
+		Footer:       footer,
+		ShowFooter:   showFooter != 0,
 		CreatedAt:    parseTime(createdAt),
 		UpdatedAt:    parseTime(updatedAt),
 	}, nil
@@ -516,6 +524,14 @@ func joinStrings(strs []string) string {
 		result += `"` + s + `"`
 	}
 	return result
+}
+
+// boolToInt maps a bool to 0/1 for SQLite storage.
+func boolToInt(b bool) int64 {
+	if b {
+		return 1
+	}
+	return 0
 }
 
 // formatTime converts time.Time to a string.

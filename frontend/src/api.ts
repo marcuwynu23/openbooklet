@@ -27,6 +27,9 @@ export interface Booklet {
   status: string;
   audience: string;
   instructions: string;
+  header: string;
+  footer: string;
+  showFooter: boolean;
   sections: Section[];
   createdAt: string;
   updatedAt: string;
@@ -69,7 +72,15 @@ export const api = {
   },
   updateBooklet(
     id: string,
-    patch: { title?: string; type?: string; audience?: string; instructions?: string },
+    patch: {
+      title?: string;
+      type?: string;
+      audience?: string;
+      instructions?: string;
+      header?: string;
+      footer?: string;
+      showFooter?: boolean;
+    },
   ): Promise<Booklet> {
     return request(`/api/v1/booklets/${encodeURIComponent(id)}`, {
       method: 'PUT',
