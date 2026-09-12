@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { SectionCard } from './components/SectionCard';
 import { GeneratePanel } from './components/GeneratePanel';
+import { FullPreview } from './components/FullPreview';
 import { AddSectionForm } from './components/AddSectionForm';
 import { useBookletStore } from './stores';
 import './styles.css';
@@ -79,6 +80,7 @@ export function App() {
   const booklet = useBookletStore((s) => s.booklet);
   const loading = useBookletStore((s) => s.loading);
   const error = useBookletStore((s) => s.error);
+  const [view, setView] = useState<'sections' | 'preview'>('sections');
 
   useEffect(() => {
     void loadBooklets();
@@ -99,11 +101,37 @@ export function App() {
             {booklet.sections.length === 0 && (
               <p className="muted">No sections yet — describe the document below and generate them.</p>
             )}
-            <GeneratePanel bookletId={booklet.id} />
-            {booklet.sections.map((section, i) => (
-              <SectionCard key={section.id} bookletId={booklet.id} section={section} index={i + 1} />
-            ))}
-            <AddSectionForm bookletId={booklet.id} sections={booklet.sections} />
+            <div className="tabs view-tabs" role="tablist" aria-label="Booklet view">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={view === 'sections'}
+                className={view === 'sections' ? 'active' : ''}
+                onClick={() => setView('sections')}
+              >
+                Sections
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={view === 'preview'}
+                className={view === 'preview' ? 'active' : ''}
+                onClick={() => setView('preview')}
+              >
+                Full preview
+              </button>
+            </div>
+            {view === 'preview' ? (
+              <FullPreview booklet={booklet} />
+            ) : (
+              <>
+                <GeneratePanel bookletId={booklet.id} />
+                {booklet.sections.map((section, i) => (
+                  <SectionCard key={section.id} bookletId={booklet.id} section={section} index={i + 1} />
+                ))}
+                <AddSectionForm bookletId={booklet.id} sections={booklet.sections} />
+              </>
+            )}
           </>
         )}
       </main>

@@ -363,3 +363,11 @@ body {
   border: 1px solid #d0d7de;
   border-radius: 6px;
 }
+
+.view-tabs {
+  margin-bottom: 16px;
+}
+
+.full-preview {
+  padding: 24px 32px;
+}

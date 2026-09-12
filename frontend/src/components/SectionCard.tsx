@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
-import { marked } from 'marked';
 import { api, type RegenerateMode, type Section } from '../api';
+import { renderMarkdown } from '../markdown';
 import { useBookletStore } from '../stores';
-
-marked.setOptions({ breaks: true });
 
 function statusColor(status: string): string {
   switch (status) {
@@ -18,11 +16,6 @@ function statusColor(status: string): string {
     default:
       return '#57606a';
   }
-}
-
-function renderMarkdown(content: string): string {
-  const html = marked.parse(content, { async: false });
-  return typeof html === 'string' ? html : '';
 }
 
 type Tab = 'preview' | 'edit';
