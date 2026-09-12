@@ -142,3 +142,118 @@ func TestGenerateSectionsErrors(t *testing.T) {
 		t.Error("provider error should propagate")
 	}
 }
+
+func TestStreamGeneration(t *testing.T) {
+	repo := NewInMemoryBookletRepository()
+	svc := NewService(repo)
+	if _, err := svc.CreateBooklet("b1", "Guide", "sop", "", ""); err != nil {
+		t.Fatalf("CreateBooklet failed: %v", err)
+	}
+
+	p := &generateFakeProvider{tokens: []string{generateFixture}}
+	events, err := svc.StreamGeneration(context.Background(), "b1", p, "fake-model", "Write a deploy guide.")
+	if err != nil {
+		t.Fatalf("StreamGeneration failed: %v", err)
+	}
+
+	var sawStart, sawToken bool
+	var sections []Section
+	for event := range events {
+		switch event.Type {
+		case SectionEventStart:
+			sawStart = true
+			if event.GenerationID == "" {
+				t.Error("start event missing generation ID")
+			}
+		case SectionEventToken:
+			sawToken = true
+		case SectionEventComplete:
+			sections = event.Sections
+		case SectionEventError:
+			t.Fatalf("stream error: %s", event.Message)
+		}
+	}
+	if !sawStart || !sawToken {
+		t.Error("stream missing start or token events")
+	}
+	if len(sections) != 3 {
+		t.Fatalf("complete carries %d sections, want 3", len(sections))
+	}
+
+	stored, err := repo.GetBooklet("b1")
+	if err != nil {
+		t.Fatalf("GetBooklet failed: %v", err)
+	}
+	if len(stored.Sections) != 3 {
+		t.Errorf("stored sections = %d, want 3", len(stored.Sections))
+	}
+}
+
+func TestStreamGenerationNoHeadings(t *testing.T) {
+	repo := NewInMemoryBookletRepository()
+	svc := NewService(repo)
+	if _, err := svc.CreateBooklet("b1", "Guide", "sop", "", ""); err != nil {
+		t.Fatalf("CreateBooklet failed: %v", err)
+	}
+
+	p := &generateFakeProvider{tokens: []string{"Just prose.\n"}}
+	events, err := svc.StreamGeneration(context.Background(), "b1", p, "m", "prompt")
+	if err != nil {
+		t.Fatalf("StreamGeneration failed: %v", err)
+	}
+	for event := range events {
+		if event.Type == SectionEventError {
+			return
+		}
+		if event.Type == SectionEventComplete {
+			t.Fatal("heading-less output should end in error, not complete")
+		}
+	}
+	t.Error("stream closed without a terminal event")
+}
+
+func TestRegenerateSection(t *testing.T) {
+	repo := NewInMemoryBookletRepository()
+	svc := NewService(repo)
+	if _, err := svc.CreateBooklet("b1", "Guide", "sop", "", ""); err != nil {
+		t.Fatalf("CreateBooklet failed: %v", err)
+	}
+	original := &Section{
+		ID:      "s1",
+		Title:   "Steps",
+		Level:   2,
+		Content: "Run it.\n",
+		Status:  section.SectionStatusEdited,
+	}
+	if err := svc.AddSection("b1", original); err != nil {
+		t.Fatalf("AddSection failed: %v", err)
+	}
+
+	p := &generateFakeProvider{tokens: []string{"Run it twice.\n"}}
+	updated, err := svc.RegenerateSection(context.Background(), "b1", "s1", p, "m", RegenerateExpand, "")
+	if err != nil {
+		t.Fatalf("RegenerateSection failed: %v", err)
+	}
+	if !strings.Contains(updated.Content, "Run it twice.") {
+		t.Errorf("content = %q, want regenerated text", updated.Content)
+	}
+	if updated.Status != section.SectionStatusGenerated {
+		t.Errorf("status = %q, want generated", updated.Status)
+	}
+	if len(updated.History) != 1 || !strings.Contains(updated.History[0].Content, "Run it.") {
+		t.Errorf("history = %+v, want snapshot of original", updated.History)
+	}
+	if updated.Generation == nil || updated.Generation.Provider != "fake" {
+		t.Errorf("generation = %+v, want metadata", updated.Generation)
+	}
+
+	if _, err := svc.RegenerateSection(context.Background(), "b1", "s1", p, "m", RegenerateEdit, ""); err == nil {
+		t.Error("edit mode without instruction should return an error")
+	}
+	if _, err := svc.RegenerateSection(context.Background(), "b1", "s1", p, "m", "bogus", ""); err == nil {
+		t.Error("unknown mode should return an error")
+	}
+	if _, err := svc.RegenerateSection(context.Background(), "b1", "missing", p, "m", RegenerateRewrite, ""); err == nil {
+		t.Error("missing section should return an error")
+	}
+}

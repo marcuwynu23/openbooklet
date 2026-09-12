@@ -96,6 +96,32 @@ func (s *Service) DeleteSection(bookletID, sectionID string) error {
 	return s.repo.DeleteSection(bookletID, sectionID)
 }
 
+// UpdateSection applies a partial update to a section's editable fields.
+// Status is left untouched; status changes go through ChangeSectionStatus.
+func (s *Service) UpdateSection(bookletID, sectionID string, title, prompt, content *string) (*Section, error) {
+	sec, err := s.repo.GetSection(bookletID, sectionID)
+	if err != nil {
+		return nil, err
+	}
+	if title != nil {
+		sec.Title = *title
+	}
+	if prompt != nil {
+		sec.Prompt = *prompt
+	}
+	if content != nil {
+		sec.Content = *content
+	}
+	sec.UpdatedAt = timeNow()
+	if err := sec.Validate(); err != nil {
+		return nil, err
+	}
+	if err := s.repo.SaveSection(bookletID, sec); err != nil {
+		return nil, fmt.Errorf("saving section: %w", err)
+	}
+	return sec, nil
+}
+
 // ChangeSectionStatus transitions a section to a new status.
 func (s *Service) ChangeSectionStatus(bookletID, sectionID string, newStatus section.SectionStatus) error {
 	sec, err := s.repo.GetSection(bookletID, sectionID)

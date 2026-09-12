@@ -49,23 +49,32 @@ security:
 
 frontend-check: tsc lint-frontend prettier-check test-frontend
 
+frontend-install:
+	cd frontend && npm.cmd install
+
+frontend-dev:
+	cd frontend && npm.cmd run dev
+
+frontend-build:
+	cd frontend && npm.cmd run build
+
 tsc:
-	cd frontend && npx tsc --noEmit
+	cd frontend && npx.cmd tsc --noEmit
 
 lint-frontend:
-	cd frontend && npx eslint src/
+	cd frontend && npx.cmd eslint src/
 
 prettier-check:
-	cd frontend && npx prettier --check src/
+	cd frontend && npx.cmd prettier --check src/
 
 prettier-fix:
-	cd frontend && npx prettier --write src/
+	cd frontend && npx.cmd prettier --write src/
 
 test-frontend:
-	cd frontend && npx vitest run
+	cd frontend && npx.cmd vitest run
 
 e2e:
-	cd frontend && npx playwright test
+	cd frontend && npx.cmd playwright test
 
 # --- Utilities ---
 

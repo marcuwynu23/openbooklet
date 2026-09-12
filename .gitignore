@@ -6,7 +6,7 @@ data/
 # Build output
 /openbooklet
 /openbooklet.exe
-dist/
+/dist/
 
 # Go
 coverage.out

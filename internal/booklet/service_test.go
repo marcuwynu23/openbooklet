@@ -337,3 +337,33 @@ func TestServiceGetSectionTree(t *testing.T) {
 		t.Errorf("GetSectionTree()[0].ID = %q, want 's1'", tree[0].ID)
 	}
 }
+
+func TestServiceUpdateSection(t *testing.T) {
+	repo := NewInMemoryBookletRepository()
+	svc := NewService(repo)
+	svc.CreateBooklet("b1", "Test", "sop", "", "")                                                                //nolint:errcheck
+	svc.AddSection("b1", &Section{ID: "s1", Title: "Original", Level: 2, Status: section.SectionStatusGenerated}) //nolint:errcheck
+
+	newContent := "Edited content."
+	updated, err := svc.UpdateSection("b1", "s1", nil, nil, &newContent)
+	if err != nil {
+		t.Fatalf("UpdateSection failed: %v", err)
+	}
+	if updated.Content != newContent {
+		t.Errorf("content = %q, want %q", updated.Content, newContent)
+	}
+	if updated.Title != "Original" {
+		t.Errorf("title = %q, want untouched 'Original'", updated.Title)
+	}
+	if updated.Status != section.SectionStatusGenerated {
+		t.Errorf("status = %q, want untouched 'generated'", updated.Status)
+	}
+
+	empty := ""
+	if _, err := svc.UpdateSection("b1", "s1", &empty, nil, nil); err == nil {
+		t.Error("empty title should fail validation")
+	}
+	if _, err := svc.UpdateSection("b1", "missing", nil, nil, &newContent); err == nil {
+		t.Error("missing section should return an error")
+	}
+}
