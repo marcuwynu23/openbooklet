@@ -1,0 +1,15 @@
+linters:
+  disable:
+    - prealloc
+    - nakedret
+    - revive
+    - errcheck
+  enable:
+    - unused
+    - ineffassign
+
+run:
+  exclude-dirs:
+    - .git
+    - vendor
+  tests: true
