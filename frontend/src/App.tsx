@@ -72,6 +72,7 @@ function BookletHeader() {
           </>
         )}
         <span className="spacer" />
+        <TransferButtons bookletId={booklet.id} />
         <button type="button" className="danger-btn" onClick={confirmDelete}>
           Delete
         </button>
@@ -135,7 +136,6 @@ export function App() {
             ) : (
               <>
                 <GeneratePanel bookletId={booklet.id} />
-                <TransferButtons bookletId={booklet.id} />
                 {booklet.sections.map((section, i) => (
                   <SectionCard key={section.id} bookletId={booklet.id} section={section} index={i + 1} />
                 ))}

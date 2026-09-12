@@ -404,10 +404,9 @@ body {
 }
 
 .transfer-row {
-  display: flex;
+  display: inline-flex;
   gap: 8px;
   align-items: center;
-  margin-bottom: 16px;
 }
 
 .transfer-row button {
