@@ -68,7 +68,10 @@ func LoadFromEnv() *Config {
 	cfg := NewDefaultConfig()
 
 	if port := os.Getenv("OPENBOOKLET_PORT"); port != "" {
-		fmt.Sscanf(port, "%d", &cfg.Port)
+		var parsed int
+		if _, err := fmt.Sscanf(port, "%d", &parsed); err == nil {
+			cfg.Port = parsed
+		}
 	}
 	if host := os.Getenv("OPENBOOKLET_HOST"); host != "" {
 		cfg.Host = host
@@ -95,7 +98,10 @@ func LoadFromEnv() *Config {
 		cfg.LogLevel = logLevel
 	}
 	if timeoutStr := os.Getenv("OPENBOOKLET_TIMEOUT"); timeoutStr != "" {
-		fmt.Sscanf(timeoutStr, "%d", &cfg.Timeout)
+		var parsed int
+		if _, err := fmt.Sscanf(timeoutStr, "%d", &parsed); err == nil {
+			cfg.Timeout = time.Duration(parsed)
+		}
 	}
 
 	return cfg

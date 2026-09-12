@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	_ "modernc.org/sqlite"
+	_ "modernc.org/sqlite" // SQLite driver
 )
 
 // Storage holds the database connection and provides access to repositories.

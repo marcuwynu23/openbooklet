@@ -181,11 +181,11 @@ func (b *Booklet) SectionCount() int {
 
 // MaxLevel returns the deepest nesting level in the section tree.
 func (b *Booklet) MaxLevel() int {
-	max := 0
+	level := 0
 	for i := range b.Sections {
-		if b.Sections[i].Level > max {
-			max = b.Sections[i].Level
+		if b.Sections[i].Level > level {
+			level = b.Sections[i].Level
 		}
 	}
-	return max
+	return level
 }

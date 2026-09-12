@@ -159,7 +159,7 @@ func (r *SQLiteBookletRepository) GetBooklet(id string) (*booklet.Booklet, error
 	b.Sections = sections
 
 	// Load booklet_references
-	refs, err := r.getbooklet_references(id)
+	refs, err := r.getBookletReferences(id)
 	if err != nil {
 		return nil, fmt.Errorf("loading booklet_references: %w", err)
 	}
@@ -300,8 +300,8 @@ func (r *SQLiteBookletRepository) DeleteSection(bookletID, sectionID string) err
 	return nil
 }
 
-// getbooklet_references loads booklet_references for a booklet.
-func (r *SQLiteBookletRepository) getbooklet_references(bookletID string) ([]booklet.Reference, error) {
+// getBookletReferences loads booklet_references for a booklet.
+func (r *SQLiteBookletRepository) getBookletReferences(bookletID string) ([]booklet.Reference, error) {
 	rows, err := r.db.Query(`
 		SELECT id, depends_on, description FROM booklet_references WHERE booklet_id = ?
 	`, bookletID)
