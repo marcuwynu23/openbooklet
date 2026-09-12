@@ -6,10 +6,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/google/uuid"
@@ -35,27 +33,8 @@ func main() {
 		log.Fatalf("configuration error: %v", err)
 	}
 
-	repo := booklet.NewInMemoryBookletRepository()
-
-	app := NewApp(cfg, repo)
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-
-	go func() {
-		<-quit
-		log.Println("Shutting down OpenBooklet...")
-		os.Exit(0)
-	}()
-
-	log.Printf("OpenBooklet starting on %s:%d", cfg.Host, cfg.Port)
-	log.Println("Usage: openbooklet generate --prompt \"Describe the SOP to write.\"")
-
-	// Verify services are wired correctly.
-	bs := app.BookletService()
-	ss := app.SectionService()
-	if bs == nil || ss == nil {
-		log.Fatal("Failed to initialize services")
+	if err := runServer(cfg); err != nil {
+		log.Fatalf("server: %v", err)
 	}
 }
 

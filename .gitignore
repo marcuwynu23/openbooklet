@@ -1,0 +1,21 @@
+# Runtime data
+data/
+*.db
+*.db-journal
+
+# Build output
+/openbooklet
+/openbooklet.exe
+dist/
+
+# Go
+coverage.out
+coverage.html
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# OS / editor
+.DS_Store
+Thumbs.db
